@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "WhatsApp-Clone",
+    "slug": "whatsapp-clone",
+    "owner": "iroka09",
+    "version": "1.0.0",
+    "icon": "./assets/images/whatsapp_iconGreen.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#fff",
+      "image": "./assets/images/empty_splash_image.png"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iroka09.whatsapp-clone"
+    },
+    "scheme": "w-clone",
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/whatsapp_iconGreen.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.iroka09.whatsapp_clone",
+      "intentFilters": [
+        {
+          "autoVerify": true,
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "w-clone",
+              "host": "home"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/whatsapp_clone.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5388ec0d-6c69-4332-8b1d-1c4a4cb74dd3"
+      }
+    }
+  }
+}

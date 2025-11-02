@@ -1,0 +1,397 @@
+[
+  {
+    "id": 1,
+    "name": "John",
+    "phone": "+2348031112233",
+    "avatar": "https://i.pravatar.cc/150?img=1",
+    "lastMessage": {
+      "text": "Are we still meeting today?",
+      "fromMe": false
+    },
+    "date": "10/01/25",
+    "hasStatus": true,
+    "unreadCount": 2
+  },
+  {
+    "id": 2,
+    "name": null,
+    "phone": "+2349014567890",
+    "avatar": "https://i.pravatar.cc/150?img=2",
+    "lastMessage": {
+      "text": "You reacted ❤️ to 'Good Morning'",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 3,
+    "name": "Michael",
+    "phone": "+2348025551212",
+    "avatar": "https://i.pravatar.cc/150?img=3",
+    "lastMessage": {
+      "text": "I thank God for today",
+      "fromMe": false
+    },
+    "date": "9/26/25",
+    "hasStatus": false,
+    "unreadCount": 1
+  },
+  {
+    "id": 4,
+    "name": "Chioma",
+    "phone": "+2348109876543",
+    "avatar": "https://i.pravatar.cc/150?img=4",
+    "lastMessage": {
+      "text": "😂😂😂",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": true,
+    "unreadCount": 3
+  },
+  {
+    "id": 5,
+    "name": null,
+    "phone": "+2347061234567",
+    "avatar": "https://i.pravatar.cc/150?img=5",
+    "lastMessage": {
+      "text": "The message timer was updated",
+      "fromMe": false
+    },
+    "date": "9/22/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 6,
+    "name": "Esther",
+    "phone": "+2349097651122",
+    "avatar": "https://i.pravatar.cc/150?img=6",
+    "lastMessage": {
+      "text": "You reacted ❤️ to 'Happy Sunday'",
+      "fromMe": false
+    },
+    "date": "9/20/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 7,
+    "name": "Emeka",
+    "phone": "+2348059873210",
+    "avatar": "https://i.pravatar.cc/150?img=7",
+    "lastMessage": {
+      "text": "Don’t regret what you didn’t do",
+      "fromMe": false
+    },
+    "date": "9/19/25",
+    "hasStatus": true,
+    "unreadCount": 4
+  },
+  {
+    "id": 8,
+    "name": "Grace",
+    "phone": "+2348172349900",
+    "avatar": "https://i.pravatar.cc/150?img=8",
+    "lastMessage": {
+      "text": "Meeting by 4pm confirmed",
+      "fromMe": false
+    },
+    "date": "9/18/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 9,
+    "name": "Samuel",
+    "phone": "+2348122223344",
+    "avatar": "https://i.pravatar.cc/150?img=9",
+    "lastMessage": {
+      "text": "Got home safely",
+      "fromMe": false
+    },
+    "date": "9/15/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 10,
+    "name": "Juliet",
+    "phone": "+2348133334455",
+    "avatar": "https://i.pravatar.cc/150?img=10",
+    "lastMessage": {
+      "text": "Happy Birthday 🎉",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": true,
+    "unreadCount": 1
+  },
+  {
+    "id": 11,
+    "name": "Peter",
+    "phone": "+2348144445566",
+    "avatar": "https://i.pravatar.cc/150?img=11",
+    "lastMessage": {
+      "text": "Send me the file",
+      "fromMe": false
+    },
+    "date": "9/13/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 12,
+    "name": null,
+    "phone": "+2348155556677",
+    "avatar": "https://i.pravatar.cc/150?img=12",
+    "lastMessage": {
+      "text": "You missed a call",
+      "fromMe": false
+    },
+    "date": "9/10/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 13,
+    "name": "Joy",
+    "phone": "+2348166667788",
+    "avatar": "https://i.pravatar.cc/150?img=13",
+    "lastMessage": {
+      "text": "See you tomorrow",
+      "fromMe": false
+    },
+    "date": "9/09/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 14,
+    "name": "Victor",
+    "phone": "+2348177778899",
+    "avatar": "https://i.pravatar.cc/150?img=14",
+    "lastMessage": {
+      "text": "Typing...",
+      "fromMe": false
+    },
+    "date": "9/08/25",
+    "hasStatus": false,
+    "unreadCount": 2
+  },
+  {
+    "id": 15,
+    "name": "Blessing",
+    "phone": "+2348188889900",
+    "avatar": "https://i.pravatar.cc/150?img=15",
+    "lastMessage": {
+      "text": "Goodnight 🌙",
+      "fromMe": false
+    },
+    "date": "9/07/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 16,
+    "name": "Kingsley",
+    "phone": "+2348199990011",
+    "avatar": "https://i.pravatar.cc/150?img=16",
+    "lastMessage": {
+      "text": "Check your email",
+      "fromMe": false
+    },
+    "date": "9/06/25",
+    "hasStatus": true,
+    "unreadCount": 5
+  },
+  {
+    "id": 17,
+    "name": "Sophia",
+    "phone": "+2348200001122",
+    "avatar": "https://i.pravatar.cc/150?img=17",
+    "lastMessage": {
+      "text": "Thanks a lot 🙏",
+      "fromMe": false
+    },
+    "date": "9/05/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 18,
+    "name": "Tunde",
+    "phone": "+2348211112233",
+    "avatar": "https://i.pravatar.cc/150?img=18",
+    "lastMessage": {
+      "text": "Where are you?",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": false,
+    "unreadCount": 1
+  },
+  {
+    "id": 19,
+    "name": "Ngozi",
+    "phone": "+2348222223344",
+    "avatar": "https://i.pravatar.cc/150?img=19",
+    "lastMessage": {
+      "text": "Okay, noted",
+      "fromMe": false
+    },
+    "date": "9/03/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 20,
+    "name": null,
+    "phone": "+2348233334455",
+    "avatar": "https://i.pravatar.cc/150?img=20",
+    "lastMessage": {
+      "text": "Photo",
+      "fromMe": true,
+      "status": "sent"
+    },
+    "date": "9/02/25",
+    "hasStatus": true,
+    "unreadCount": 0
+  },
+  {
+    "id": 21,
+    "name": "Favour",
+    "phone": "+2348244445566",
+    "avatar": "https://i.pravatar.cc/150?img=21",
+    "lastMessage": {
+      "text": "Long time no see!",
+      "fromMe": false
+    },
+    "date": "9/01/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 22,
+    "name": "Uche",
+    "phone": "+2348255556677",
+    "avatar": "https://i.pravatar.cc/150?img=22",
+    "lastMessage": {
+      "text": "Are you coming tomorrow?",
+      "fromMe": false
+    },
+    "date": "8/30/25",
+    "hasStatus": true,
+    "unreadCount": 2
+  },
+  {
+    "id": 23,
+    "name": "Mariam",
+    "phone": "+2348266667788",
+    "avatar": "https://i.pravatar.cc/150?img=23",
+    "lastMessage": {
+      "text": "I’ll send it later.",
+      "fromMe": true,
+      "status": "sent"
+    },
+    "date": "8/28/25",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 24,
+    "name": null,
+    "phone": "+2348277778899",
+    "avatar": "https://i.pravatar.cc/150?img=24",
+    "lastMessage": {
+      "text": "Call me when free.",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": false,
+    "unreadCount": 1
+  },
+  {
+    "id": 25,
+    "name": "Ebuka",
+    "phone": "+2348288889900",
+    "avatar": "https://i.pravatar.cc/150?img=25",
+    "lastMessage": {
+      "text": "😂😂😂",
+      "fromMe": false
+    },
+    "date": "8/25/25",
+    "hasStatus": true,
+    "unreadCount": 3
+  },
+  {
+    "id": 26,
+    "name": "Ada",
+    "phone": "+2348299990011",
+    "avatar": "https://i.pravatar.cc/150?img=26",
+    "lastMessage": {
+      "text": "On my way now.",
+      "fromMe": true,
+      "status": "delivered"
+    },
+    "date": "8:45 PM",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 27,
+    "name": "Chidera",
+    "phone": "+2348106677889",
+    "avatar": "https://i.pravatar.cc/150?img=27",
+    "lastMessage": {
+      "text": "Make sure you call me when you reach.",
+      "fromMe": true,
+      "status": "delivered"
+    },
+    "date": "7:12 AM",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 28,
+    "name": null,
+    "phone": "+2348034455667",
+    "avatar": "https://i.pravatar.cc/150?img=28",
+    "lastMessage": {
+      "text": "Check that mail I sent you.",
+      "fromMe": false
+    },
+    "date": "Sep 28",
+    "hasStatus": true,
+    "unreadCount": 1
+  },
+  {
+    "id": 29,
+    "name": "Ngozi",
+    "phone": "+2348059988776",
+    "avatar": "https://i.pravatar.cc/150?img=29",
+    "lastMessage": {
+      "text": "Goodnight 🌙",
+      "fromMe": true,
+      "status": "read"
+    },
+    "date": "11:54 PM",
+    "hasStatus": false,
+    "unreadCount": 0
+  },
+  {
+    "id": 30,
+    "name": "Ikenna",
+    "phone": "+2348162233445",
+    "avatar": "https://i.pravatar.cc/150?img=30",
+    "lastMessage": {
+      "text": "We go yarn tomorrow.",
+      "fromMe": false
+    },
+    "date": "yesterday",
+    "hasStatus": true,
+    "unreadCount": 4
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "colors": {
+    "themes": {
+      "light": {
+        "primary": "#1DAB61",
+        "secondary": "#D8FDD2",
+        "background":  "#fff"
+      },
+      "dark": {
+        "primary":  "#085",
+        "secondary": "#0645",
+        "background":  "#0B1014"
+      }
+    }
+  },
+  "paddingHorizontal": 15
+}
