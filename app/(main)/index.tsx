@@ -1,49 +1,32 @@
-import React, { memo, useState, useCallback, useEffect, useRef } from "react";
-import { View, Text, Pressable, TextInput, ScrollView, FlatList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, TouchableWithoutFeedback, Dimensions } from "react-native";
-import { Camera, Search, Plus, ArchiveRestore, CheckCheck, Check, EllipsisVertical, Pin, ArrowLeft, BellOff } from "lucide-react-native"
+import React, { lazy, memo, useState, useCallback, useEffect, useRef, useMemo, useLayoutEffect } from "react";
+import { View, Text, Pressable, TextInput, ScrollView, FlatList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, Dimensions, ActivityIndicator, ToastAndroid } from "react-native";
+import { Camera, Search, Plus, ArchiveRestore, CheckCheck, Check, EllipsisVertical, Pin, ArrowLeft, BellOff, Trash } from "lucide-react-native"
 import IconButton from "@/components/IconButton"
-import ImageZoom from "@/components/ImageZoom"
-import { WebText } from "@/components/WebTags"
+import ProfilePictureModal from "@/components/ProfilePictureModal"
 import { Portal } from "@/components/Portal"
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
-import { toggleChatsSelection } from "@/redux/reducers/chats_tab_reducer";
+import { toggleChatsSelection } from "@/redux/reducers/chats_tab_reducer"
 import constants from "@/data/constants.json"
-import chats from "@/data/chats.json"
-import RippleButton from "react-native-advanced-ripple"
-import { useRouter } from "expo-router"
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate, measure, useAnimatedRef } from "react-native-reanimated"
-import { runOnUI, runOnJS } from "react-native-worklets"
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import * as ScreenCapture from 'expo-screen-capture';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { chats, type ChatsType } from "@/components/ChatsList"
+import { useRouter, usePathname } from "expo-router"
+import Animated, { useAnimatedRef, FadeIn, FadeOut, ZoomIn, ZoomOut } from "react-native-reanimated"
+import { StatusBar } from 'expo-status-bar';
+import Popup from '@/components/PopupMenu';
+
+import type BottomSheetType from "@gorhom/bottom-sheet";
+const BottomSheet = lazy(() => import("@gorhom/bottom-sheet"));
+const BottomSheetScrollView = lazy(() => import("@gorhom/bottom-sheet").then(x => ({ default: x.BottomSheetScrollView })));
+const BottomSheetBackdrop = lazy(() => import("@gorhom/bottom-sheet").then(x => ({ default: x.BottomSheetBackdrop })))
 
 
-
+const modalImageBoxInitialBorderRadius = 25;
 
 
 const _Animated = {
-  Image: Animated.createAnimatedComponent(Image),
-  Text: Animated.createAnimatedComponent(Text),
+  Image: Animated.createAnimatedComponent(Image)
 }
-
-
-type ChatsType = {
-  id: number;
-  name: string | null;
-  phone: string;
-  avatar: string;
-  lastMessage: {
-    text: string;
-    fromMe: boolean;
-    status?: "sent" | "delivered" | "read";
-  },
-  date: string;
-  hasStatus: boolean;
-  unreadCount: number;
-}[]
+Object.freeze(_Animated)
 
 
 const {
@@ -57,283 +40,76 @@ const {
 } = constants
 
 
-//"modal animations"
-const durationIn = 300;
-const durationOut = 200;
-const { width: screenWidth, height: screenHeight } = Dimensions.get('screen');
-const modalImageBoxMarginHorizontal = 50;
-const modalImageBoxWidth = screenWidth - (2 * modalImageBoxMarginHorizontal)
-const modalImageBottomBarHeight = 40;
-const modalImageAspectRatio = 10 / 10
-const modalImageBoxHeight = (modalImageBoxWidth / modalImageAspectRatio) + modalImageBottomBarHeight
-const modalImageBoxInitialBorderRadius = 25;
-const modalImageBoxFinalBorderRadius = 0;
 
 
+let ss = 0
 
 export default function App() {
-  const safeAreaInsets = useSafeAreaInsets()
-  const selectedChatsIds = useSelector((state: RootState) => state.chats.selectedChatsIds);
-  const bottomSheetRef = useRef<BottomSheet>(null)
+  //  console.log(++ss, "App()")
+  const profilePictureModalRef = useRef({})
+  const bottomSheetRef = useRef<BottomSheetType>(null)
   const router = useRouter()
-  const isDarkMode = useColorScheme() === "dark"
-  const [userImageModalObj, setUserImageModalObj] = useState<{
-    username: string, image: string
-  }>(null)
-  const [modalImageViewState, setModalImageViewState] = useState<"closed" | "half-opened" | "fully-opened">("closed")
-  const transition = useSharedValue(0)//012
-  const profilePictureLayout = useSharedValue({})
-  const dispatch = useDispatch<AppDispatch>();
-  const openProfilePictureModalToFull = useCallback(() => {
-    if (modalImageViewState !== "half-opened") return
-    transition.value = withTiming(2, { duration: durationOut }, (finished) => {
-      if (finished) runOnJS(setModalImageViewState)("fully-opened")
-    })
-  }, [modalImageViewState])
-  const openProfilePictureModal = useCallback((user, imageBoxRef) => {
-    setUserImageModalObj({ username: user.name || user.phone, image: user.avatar })
-    runOnUI(() => {
-      "worklet"
-      profilePictureLayout.value = measure(imageBoxRef)
-      transition.value = withTiming(1, { duration: durationIn }, (finished) => {
-        if (finished) {
-          runOnJS(setModalImageViewState)("half-opened")
-        }
-      })
-    })()
+  const moreChats = useMemo(() => {
+    return []
+    return ([
+      ...chats.map(x => {
+        let obj = { ...x }
+        obj.id = +(obj.id + "1000")
+        return obj
+      }),
+      ...chats.map(x => {
+        let obj = { ...x }
+        obj.id = +(obj.id + "2000")
+        return obj
+      }),
+      ...chats.map(x => {
+        let obj = { ...x }
+        obj.id = +(obj.id + "3000")
+        return obj
+      }),
+      ...chats.map(x => {
+        let obj = { ...x }
+        obj.id = +(obj.id + "4000")
+        return obj
+      }),
+      ...chats.map(x => {
+        let obj = { ...x }
+        obj.id = +(obj.id + "5000")
+        return obj
+      }),
+    ])
   }, [])
-  const closeProfilePictureModal = useCallback(() => {
-    transition.value = withTiming(0, { duration: durationOut }, (finished) => {
-      if (finished) {
-        runOnJS(setUserImageModalObj)(null)
-        runOnJS(setModalImageViewState)("closed")
-      }
-    })
-  }, [])
-  const overlayOpacityStyle = useAnimatedStyle(() => ({
-    // opacity: transition.value,
-    opacity: interpolate(transition.value, [0, 1, 2], [0, 0.6, 1])
-  }))
-  const fullscreenTitleOpacityStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(transition.value, [0, 1, 2], [0, 0, 1])
-  }))
-  const titleOpacityStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(transition.value, [0, 0.8, 1, 1.1], [0, 0, 1, 0]),
-    transform: [{
-      scaleY: interpolate(transition.value, [0, 1, 1.1], [0, 1, 0]),
-    }]
-  }))
-  const modalImageBottomBarStyle = useAnimatedStyle(() => ({
-    height: interpolate(transition.value, [0, 1, 1.01], [0, modalImageBottomBarHeight, 0], { extrapolateRight: "clamp" }),
-    transform: [{
-      scaleY: interpolate(transition.value, [0, 1, 1.01], [0, 1, 0], { extrapolateRight: "clamp" }),
-    }]
-  }))
-  const modalImageBoxStyle_for_open = useAnimatedStyle(() => ({
-    width: interpolate(transition.value, [0, 1, 2], [profilePictureLayout.value.width, modalImageBoxWidth, screenWidth]),
-    height: interpolate(transition.value, [0, 1, 2], [profilePictureLayout.value.height, modalImageBoxHeight, screenWidth]),
-    borderRadius: interpolate(transition.value, [0, 1, 2], [
-      modalImageBoxInitialBorderRadius,
-      modalImageBoxFinalBorderRadius,
-      0
-    ]),
-    transform: [
-      {
-        translateX: interpolate(transition.value, [0, 1, 2], [profilePictureLayout.value.pageX, modalImageBoxMarginHorizontal, 0])
-      },
-      {
-        translateY: interpolate(transition.value, [0, 1, 2], [profilePictureLayout.value.pageY, (screenHeight - screenWidth) / 3, (screenHeight - screenWidth) / 2]),
-      }
-    ]
-  }))
-  const modalImageBoxStyle_for_close = useAnimatedStyle(() => ({
-    width: interpolate(transition.value, [0, 2], [profilePictureLayout.value.width, screenWidth]),
-    height: interpolate(transition.value, [0, 2], [profilePictureLayout.value.height, screenWidth]),
-    borderRadius: interpolate(transition.value, [0, 2], [
-      modalImageBoxInitialBorderRadius,
-      0
-    ]),
-    transform: [
-      {
-        translateX: interpolate(transition.value, [0, 2], [profilePictureLayout.value.pageX, 0])
-      },
-      {
-        translateY: interpolate(transition.value, [0, 2], [profilePictureLayout.value.pageY, (screenHeight - screenWidth) / 2]),
-      }
-    ]
-  }))
-  useEffect(() => {
-    if (Platform.OS === "web") return
-    if (userImageModalObj)
-      ScreenCapture.preventScreenCaptureAsync();
-    else
-      ScreenCapture.allowScreenCaptureAsync();
-  }, [userImageModalObj])
-  useEffect(() => {
-    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (modalImageViewState !== "closed") {
-        closeProfilePictureModal()
-        return true; // prevents app exit
-      }
-      if (selectedChatsIds.length > 0) {
-        dispatch(toggleChatsSelection("clear"))
-        return true; // prevents app exit
-      }
-      return false; //allow closing of app
-    })
-    return () => sub.remove()
-  }, [modalImageViewState, selectedChatsIds.length])
-  const [selectionEnabled, setSelectionEnabled] = useState(false)
-  useEffect(() => {
-    setSelectionEnabled(selectedChatsIds.length > 0)
-  }, [selectedChatsIds.length])
   return (<>
     <View className="flex-1 bg-theme dark:bg-theme-dark">
       <HeaderBar bottomSheetRef={bottomSheetRef} />
       <FlatList
         className="flex-1"
-        data={[{ JSX: <ListSearchAndFilters selectionEnabled={selectionEnabled} /> }, ...chats]}
+        data={[
+          ...chats,
+          ...moreChats
+        ]}
         stickyHeaderIndices={[]}
-        keyExtractor={item => item.id || "jsx"}
-        renderItem={function ({ item }) {
-          if (item.JSX) return item.JSX
-          const isSelected = selectedChatsIds.includes(item.id)
-          return (
-            <ListItemOfUser
-              item={item}
-              openProfilePictureModal={openProfilePictureModal}
-              isSelected={isSelected}
-              selectionEnabled={selectionEnabled}
-            />
-          )
-        }}
-        ListFooterComponent={() => <Text className="text-slate-600 dark:text-slate-300 text-center py-4">Loading more...</Text>}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <ListItemOfUser
+            item={item}
+            profilePictureModalRef={profilePictureModalRef}
+          />
+        )}
+        ListHeaderComponent={() => <ListSearchAndFilters />}
+        ListFooterComponent={() => (
+          <View className="flex-row justify-center border-t-[1px] mt-2 border-t-gray-500/20 pt-5 h-40 text-center py-4">
+            <Text className="text-sm text-neutral-600 dark:text-neutral-400" >Your personal messages are
+              <Text style={{ color: primary }} className="text-sm text-bold"> end-to-end-encrypted</Text>
+            </Text>
+          </View>
+        )}
       />
     </View>
-    {/*Portals*/}
-    <Portal>
-      {userImageModalObj ?
-        <View style={{ position: "absolute", flex: 1, top: 0, right: 0, bottom: 0, left: 0 }}>
-          <Animated.View
-            style={[
-              overlayOpacityStyle,
-              {
-                backgroundColor: "#000",
-                position: "absolute",
-                top: 0, right: 0, bottom: 0, left: 0,
-              }
-            ]}
-          >
-            <Pressable
-              onPress={() => {
-                if (modalImageViewState === "fully-opened") return
-                closeProfilePictureModal()
-              }}
-              style={{
-                position: "absolute",
-                top: 0, right: 0, bottom: 0, left: 0,
-              }}
-            />
-          </Animated.View>
-          <Animated.View
-            style={[
-              fullscreenTitleOpacityStyle,
-              {
-                backgroundColor: "#000",
-                position: "absolute",
-                flexDirection: "row",
-                alignItems: 'center',
-                top: safeAreaInsets.top, right: 0, left: 0,
-                paddingHorizontal: 5,
-                paddingVertical: 3,
-              }
-            ]}
-          >
-            <IconButton
-              onPress={() => {
-                closeProfilePictureModal()
-              }}
-            >
-              <ArrowLeft color="white" />
-            </IconButton>
-            <Text className="text-white text-2xl ml-3">{userImageModalObj.username}</Text>
-          </Animated.View>
-          <Animated.View
-            style={[
-              modalImageViewState === "fully-opened" ?
-                modalImageBoxStyle_for_close :
-                modalImageBoxStyle_for_open,
-              {
-                position: "relative",
-                overflow: modalImageViewState === "fully-opened" ? "visible" : "hidden",
-                backgroundColor: modalImageViewState === "fully-opened" ? undefined : (isDarkMode ? "#22222a" : backgroundLight)
-              }
-            ]}
-          //   className="bg-theme dark:bg-theme-dark"
-          >
-            <Pressable onPress={openProfilePictureModalToFull} className="flex-1">
-              <Image
-                source={{ uri: userImageModalObj.image }}
-                className="flex-1"
-                resizeMode="cover"
-              />
-              {/*<ImageZoom enabled={modalImageViewState === "fully-opened"}>
-                <Image
-                  source={{ uri: userImageModalObj.image }}
-                  className="flex-1"
-                  resizeMode="cover"
-                />
-              </ImageZoom>*/}
-            </Pressable>
-            <Animated.View
-              style={[
-                modalImageBottomBarStyle,
-                {
-                  opacity: 1,
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 20,
-                  alignItems: "center",
-                  overflow: "hidden"
-                }
-              ]}
-            >
-              <Pressable>
-                <MaterialCommunityIcons name="message-text-outline" size={24} color={primary} />
-              </Pressable>
-              <Pressable>
-                <MaterialCommunityIcons name="phone-outline" size={24} color={primary} />
-              </Pressable>
-              <Pressable>
-                <MaterialCommunityIcons name="video-outline" size={24} color={primary} />
-              </Pressable>
-              <Pressable>
-                <MaterialCommunityIcons name="information-outline" size={24} color={primary} />
-              </Pressable>
-            </Animated.View>
-            <_Animated.Text
-              style={[
-                titleOpacityStyle,
-                {
-                  position: "absolute",
-                  top: 0, width: "100%",
-                  backgroundColor: "#0005",
-                  color: "white",
-                  fontSize: 25,
-                  paddingHorizontal: 7,
-                  paddingVertical: 2,
-                }
-              ]}
-            >
-              {userImageModalObj.username}
-            </_Animated.Text>
-          </Animated.View>
-        </View>
-        :
-        null
-      }
-    </Portal >
+    <ProfilePictureModal
+      ref={profilePictureModalRef}
+      modalImageBoxInitialBorderRadius={modalImageBoxInitialBorderRadius}
+    />
     <Portal type="append">
       <RenderBottomSheet ref={bottomSheetRef} />
     </Portal>
@@ -342,38 +118,64 @@ export default function App() {
 
 
 
-
-const HeaderBar = memo(({ bottomSheetRef }) => {
+const HeaderBar = ({ bottomSheetRef }) => {
   const isDarkMode = useColorScheme() === "dark"
-  const selectedChatsCount = useSelector((state: RootState) => state.chats.selectedChatsIds.length);
-  return (
+  const selectedChatsIds = useSelector((state: RootState) => state.chats.selectedChatsIds);
+  const pathname = usePathname()
+  const dispatch = useDispatch<AppDispatch>();
+  const bgObj = useMemo(() => ({
+    backgroundColor: isDarkMode ?
+      (selectedChatsIds.length > 0 ? "#22222566" : undefined)
+      :
+      (selectedChatsIds.length > 0 ? "#eeea" : undefined)
+  }), [isDarkMode])
+  useEffect(() => {
+    if (pathname !== "/") dispatch(toggleChatsSelection("clear"))
+  }, [pathname])
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (selectedChatsIds.length > 0) {
+        dispatch(toggleChatsSelection("clear"))
+        return true; // prevents app exit
+      }
+      return false; //allow closing of app
+    })
+    return () => sub.remove()
+  }, [selectedChatsIds])
+  return (<>
     <View
-      style={[
-        styles.header,
-        {
-          backgroundColor: isDarkMode ?
-            (selectedChatsCount > 0 ? "#22222566" : undefined)
-            :
-            (selectedChatsCount > 0 ? "#eeea" : undefined)
-        }
-      ]}>
-      {selectedChatsCount === 0 ? (<>
-        <WebText tag="span" style={{ fontSize: 22, fontWeight: 800, opacity: .9, paddingLeft: paddingHorizontal }} className="text-primary dark:text-white">WhatsApp</WebText>
-        <IconButton containerStyle={{ marginLeft: "auto" }}><Camera color={isDarkMode ? "white" : "black"} /></IconButton>
-        <IconButton
-          onPress={() => {
-            bottomSheetRef.current?.snapToIndex(0)
-          }}
-          containerStyle={{ marginRight: 2 }}
+      style={[styles.header]}>
+      {selectedChatsIds.length === 0 ? (
+        <Animated.View
+          key="zero-count"
+          entering={FadeIn}
+          exiting={FadeOut}
+          className="flex-1 flex-row items-center pt-3 pb-1"
         >
-          <EllipsisVertical color={isDarkMode ? "white" : "black"} />
-        </IconButton>
-      </>)
-        :
-        (<>
+          <Text style={{ fontSize: 22, fontWeight: 800, opacity: .9, paddingLeft: paddingHorizontal }} className="text-primary dark:text-white">WhatsApp</Text>
+          <IconButton containerStyle={{ marginLeft: "auto" }}><Camera color={isDarkMode ? "white" : "black"} /></IconButton>
+          {/* <IconButton
+            onPress={() => {
+              bottomSheetRef.current?.snapToIndex(0)
+            }}
+            containerStyle={{ marginRight: 2 }}
+          >
+            <EllipsisVertical color={isDarkMode ? "white" : "black"} />
+          </IconButton>*/}
+          <AddPopup />
+        </Animated.View>
+      ) : (
+        <Animated.View
+          key="above-zero-count"
+          entering={FadeIn}
+          exiting={FadeOut}
+          className="flex-1 flex-row items-center pt-3 pb-1"
+          style={bgObj}
+        >
           <IconButton containerStyle={{ marginLeft: 5 }}><ArrowLeft color={isDarkMode ? "white" : "black"} /></IconButton>
-          <Text style={{ marginLeft: 10, fontSize: 22, fontWeight: 500, opacity: .9 }} className="dark:text-white">{selectedChatsCount}</Text>
+          <Text style={{ marginLeft: 10, fontSize: 22, fontWeight: 500, opacity: .9 }} className="dark:text-white">{selectedChatsIds.length}</Text>
           <IconButton containerStyle={{ marginLeft: "auto" }}><Pin color={isDarkMode ? "white" : "black"} /></IconButton>
+          {selectedChatsIds.some(x => x[1] === "group") || <IconButton ><Trash color={isDarkMode ? "white" : "black"} /></IconButton>}
           <IconButton><BellOff color={isDarkMode ? "white" : "black"} /></IconButton>
           <IconButton><ArchiveRestore color={isDarkMode ? "white" : "black"} /></IconButton>
           <IconButton
@@ -385,59 +187,60 @@ const HeaderBar = memo(({ bottomSheetRef }) => {
           >
             <EllipsisVertical color={isDarkMode ? "white" : "black"} />
           </IconButton>
-        </>)
+        </Animated.View>)
       }
-    </View>
-  )
-})
+    </View >
+  </>)
+}
 
 
-
-
-const ListItemOfUser = memo(({ item, openProfilePictureModal, isSelected, selectionEnabled }) => {
+let n = 0
+const ListItemOfUser = ({ item, profilePictureModalRef }) => {
+  //console.log(++n, ": ", item.name ?? item.phone)
   const isDarkMode = useColorScheme() === "dark"
+  const isSelected = useSelector((state: RootState) => state.chats.selectedChatsIds.some(x => x[0] === item.id));
   const dispatch = useDispatch<AppDispatch>();
-  const _toggleChatsSelection = useCallback((id: number, vibrate = false) => {
-    dispatch(toggleChatsSelection(id))
+  const _toggleChatsSelection = useCallback((arr: [ChatsType["id"], ChatsType["type"]], vibrate = false) => {
+    dispatch(toggleChatsSelection(arr))
     vibrate && Vibration.vibrate(50)
   }, [])
   const imageBoxRef = useAnimatedRef()
-  const scale = useSharedValue(0)
-  const checkedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }]
-  }))
-  useEffect(() => {
-    scale.value = withTiming(+isSelected, { duration: 200 })
-  }, [isSelected])
+  const selectionEnabledRef = useRef(false)//to check if selection is enabled,note the value must be changed inside useSelector below in this component
+  useSelector((state: RootState) => {
+    selectionEnabledRef.current = state.chats.selectedChatsIds.length > 0
+    return null
+  });
+  const isSelectionEnabled = useCallback(() => selectionEnabledRef.current, [])
   return (
     <Pressable
-      delayLongPress={200}
-      onLongPress={() => _toggleChatsSelection(item.id, !selectionEnabled)}
+      delayLongPress={300}
+      onLongPress={() => _toggleChatsSelection([item.id, item.type], !isSelectionEnabled())}
       onPress={() => {
-        if (selectionEnabled) _toggleChatsSelection(item.id)
+        if (isSelectionEnabled()) _toggleChatsSelection([item.id, item.type])
         else { }
       }}
-    >
+    >{({ pressed }) => (
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
           paddingVertical: 10,
           paddingHorizontal,
-          backgroundColor: isSelected ? (isDarkMode ? "#0645" : light_secondary) : undefined
+          backgroundColor: isSelected ? (isDarkMode ? "#0645" : light_secondary) : (pressed ? "#bbb3" : undefined)
         }}
       >
+        {/*User avatar*/}
         <Pressable
-          onLongPress={() => _toggleChatsSelection(item.id, !selectionEnabled)}
+          delayLongPress={300}
+          onLongPress={() => _toggleChatsSelection([item.id, item.type], !isSelectionEnabled())}
           onPress={() => {
-            //  if (selectionEnabled) _toggleChatsSelection(item.id)
-            openProfilePictureModal(item, imageBoxRef)
+            profilePictureModalRef.current.openModal(item, imageBoxRef)
           }}
         >
           <View style={{ position: "relative" }}>
             <_Animated.Image
               ref={imageBoxRef}
-              source={{ uri: item.avatar }}
+              source={{ uri: item.avatar.lowQuality }}
               style={{
                 width: 50,
                 aspectRatio: 1,
@@ -446,15 +249,22 @@ const ListItemOfUser = memo(({ item, openProfilePictureModal, isSelected, select
                 backgroundColor: "gray"
               }}
             />
-            <Animated.View style={[checkedStyle, { position: "absolute", bottom: -1, right: 6, padding: 3, backgroundColor: primary, marginLeft: "auto", borderRadius: 999, borderWidth: 2, borderColor: light_secondary }]}>
+            {isSelected && <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)} style={{ position: "absolute", bottom: -1, right: 6, padding: 3, backgroundColor: primary, marginLeft: "auto", borderRadius: 999, borderWidth: 2, borderColor: light_secondary }}>
               <Check color={light_secondary} size={12} strokeWidth={3} />
-            </Animated.View>
+            </Animated.View>}
           </View>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ flex: 1, fontSize: 18, fontWeight: 500 }} className="text-slate-800 dark:text-slate-200">{item.name || item.phone}</Text>
-            <Text style={{ marginLeft: "auto", fontSize: 12, color: (!item.date.includes("/")) ? primary : (isDarkMode ? "#aaa" : undefined), textTransform: "capitalize" }} className="font-bold">{item.date}</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 4, alignItems: "center" }}>
+            <Text
+              style={{ flex: 1, fontSize: 18, fontWeight: 500, flexShrink: 1 }}
+              className="text-slate-800 dark:text-slate-200"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.name ?? item.phone}
+            </Text>
+            <Text style={{ fontSize: 12, color: (!!item.unreadCount) ? primary : (isDarkMode ? "#aaa" : "#777"), textTransform: "capitalize" }} className="">{item.date}</Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {item.lastMessage.fromMe ? (
@@ -468,30 +278,31 @@ const ListItemOfUser = memo(({ item, openProfilePictureModal, isSelected, select
             <Text
               style={{
                 fontSize: 14,
+                flexShrink: 1,//helps to avoid overflow during ellipsis
                 color: item.lastMessage.text.toLocaleLowerCase() === "typing..." ? primary : (isDarkMode ? "#aaa" : "#555")
               }}
               numberOfLines={1}
-              ellipsizeMode="clip"  // 'head' | 'middle' | 'tail' | 'clip'
+              ellipsizeMode="tail" // 'head' | 'middle' | 'tail' | 'clip'
             >
               {item.lastMessage.text}
             </Text>
-            <View style={{ opacity: +(!!item.unreadCount), width: 20, aspectRatio: 1, justifyContent: "center", alignItems: "center", backgroundColor: primary, marginLeft: "auto", borderRadius: 999 }}>
-              <Text style={{ color: "white", fontSize: 10 }}>{item.unreadCount}</Text>
-            </View>
+            <Text style={{ color: "white", fontSize: 10, opacity: +(!!item.unreadCount), width: 20, aspectRatio: 1, textAlign: "center", verticalAlign: "middle", backgroundColor: primary, marginLeft: "auto", borderRadius: 999 }}>{item.unreadCount}</Text>
           </View>
         </View>
       </View>
+    )}
     </Pressable>
   )
-})
+}
 
 
 
 
 
-const ListSearchAndFilters = memo(({ selectionEnabled }) => {
+const ListSearchAndFilters = () => {
   const isDarkMode = useColorScheme() === "dark"
   const [chatsFilter, setChatsFilter] = useState<string>("all")
+  const selectionEnabled = useSelector((state: RootState) => state.chats.selectedChatsIds.length > 0);
   const unreadCount = useRef(chats.filter(x => x.unreadCount >= 1).length).current
   const filters = React.useMemo(() => (
     ["all", "unread " + unreadCount, "favourites", "groups " + 3, "add_more"]
@@ -507,9 +318,10 @@ const ListSearchAndFilters = memo(({ selectionEnabled }) => {
           flexDirection: "row",
           alignItems: "center",
           borderRadius: 999,
-          backgroundColor: isDarkMode ? "#eef2" : "#f0f3f5",
-          paddingHorizontal: 15,
-          paddingVertical: Platform.OS === "web" ? 10 : undefined
+          backgroundColor: isDarkMode ? "#eee2" : "#f0f0f0",
+          paddingHorizontal: 20,
+          paddingVertical: Platform.OS === "web" ? 10 : 2,
+          marginBottom: 5
         }}
       >
         <Search color={isDarkMode ? "#aaa" : "#888"} />
@@ -520,72 +332,104 @@ const ListSearchAndFilters = memo(({ selectionEnabled }) => {
         />
       </View>
       <ScrollView
+        className="relative"
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexDirection: "row", alignItems: "center" }}
-        pointerEvents={selectionEnabled ? "none" : "auto"}
+        pointerEvents={selectionEnabled ? "none" : "auto"}//in ScrollView it "none" prevents only scrolling
         opacity={selectionEnabled ? 0.5 : 1}
-        className="relative"
       >
-        {filters.map(txt => {
-          let out;
-          if (txt === "add_more") out = <Plus size={17} color={isDarkMode ? (txt.startsWith(chatsFilter) ? "#bdb" : "#aaa") : (txt.startsWith(chatsFilter) ? "#050" : "#888")} />
-          else out = (
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: isDarkMode ?
-                  (txt.startsWith(chatsFilter) ? "#bdb" : "#aaa")
-                  :
-                  txt.startsWith(chatsFilter) ? "#050" : "#888",
-              }}>
-              {`${txt.charAt(0).toUpperCase()}${txt.slice(1).toLowerCase()}`}
-            </Text>)
-          return (
-            <IconButton
-              key={txt}
-              chip
-              containerStyle={{
-                borderWidth: 1,
-                borderColor: isDarkMode ? "#4446" : "#ddd",
-                borderRadius: 999,
-                marginVertical: 10,
-                marginLeft: 5,
-                paddingHorizontal: 4,
-                backgroundColor: txt.startsWith(chatsFilter) ? (isDarkMode ? dark_secondary : light_secondary) : "transparent"
-              }}
-              pointerEvents={selectionEnabled ? "none" : "auto"}
-              ripple_color={txt.startsWith(chatsFilter) ? "transparent" : light_secondary}
-              onPress={() => {
-                if (txt === "add_more") return
-                setChatsFilter(txt.split(/\s/)[0])
-              }}
-            >
-              {out}
-            </IconButton>
-          )
-        })}
+        <View
+          className="flex-row"
+          pointerEvents={selectionEnabled ? "none" : "auto"}//this one prevents clicking
+        >
+          {filters.map(txt => {
+            let out;
+            if (txt === "add_more") out = <Plus size={17} color={isDarkMode ? (txt.startsWith(chatsFilter) ? "#bdb" : "#aaa") : (txt.startsWith(chatsFilter) ? "#050" : "#888")} />
+            else out = (
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: isDarkMode ?
+                    (txt.startsWith(chatsFilter) ? "#bdb" : "#aaa")
+                    :
+                    txt.startsWith(chatsFilter) ? "#050" : "#888",
+                }}>
+                {`${txt.charAt(0).toUpperCase()}${txt.slice(1).toLowerCase()}`}
+              </Text>)
+            return (
+              <IconButton
+                key={txt}
+                chip
+                containerStyle={{
+                  borderWidth: 1,
+                  borderColor: isDarkMode ? "#4446" : "#ddd",
+                  borderRadius: 999,
+                  marginVertical: 10,
+                  marginLeft: 5,
+                  paddingHorizontal: 4,
+                  backgroundColor: txt.startsWith(chatsFilter) ? (isDarkMode ? dark_secondary : light_secondary) : "transparent"
+                }}
+                ripple_color={txt.startsWith(chatsFilter) ? "transparent" : light_secondary}
+                onPress={() => {
+                  if (txt === "add_more") return
+                  setChatsFilter(txt.split(/\s/)[0])
+                }}
+              >
+                {out}
+              </IconButton>
+            )
+          })}
+        </View>
       </ScrollView>
-    </View >
-    <RippleButton >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingVertical: 10,
-          paddingHorizontal,
-        }}
-      >
-        <ArchiveRestore color={isDarkMode ? "#aaa" : "#444"} style={{ marginLeft: 13 }} />
-        <Text style={{ marginLeft: 22, fontWeight: 400, fontSize: 17 }} className="text-slate-800 dark:text-neutral-300">Archived</Text>
-      </View>
-    </RippleButton>
+    </View>
+    <Pressable>
+      {({ pressed }) => (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 10,
+            paddingHorizontal,
+            backgroundColor: pressed ? "#aaa3" : undefined
+          }}
+        >
+          <ArchiveRestore color={isDarkMode ? "#aaa" : "#444"} style={{ marginLeft: 13 }} />
+          <Text style={{ marginLeft: 22, fontWeight: 400, fontSize: 17 }} className="text-slate-800 dark:text-neutral-300">Archived</Text>
+        </View>
+      )}
+    </Pressable>
   </>)
-})
+}
 
 
-const RenderBottomSheet = memo(React.forwardRef((props, ref) => {
+const AddPopup = () => {
+  const isDarkMode = useColorScheme() === "dark"
+  return (
+    <Popup>
+      <Popup.Trigger>
+        <View className="px-3">
+          <EllipsisVertical color={isDarkMode ? "white" : "black"} />
+        </View>
+      </Popup.Trigger>
+      <Popup.Options>
+        {"rental car payment key table marriage".split(" ").map(text => (
+          <Popup.Option
+            key={text}
+            onSelect={() => {
+              // alert(text)
+            }}
+          >
+            <Text style={{ textTransform: "capitalize" }} >{text}</Text>
+          </Popup.Option>
+        ))}
+      </Popup.Options>
+    </Popup>
+  )
+}
+
+const RenderBottomSheet = React.forwardRef((props, ref) => {
   return (
     <BottomSheet
       ref={ref}
@@ -618,14 +462,13 @@ const RenderBottomSheet = memo(React.forwardRef((props, ref) => {
       </BottomSheetScrollView>
     </BottomSheet>
   )
-}))
+})
 
 
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 5,
     paddingBottom: 5,
     marginBottom: 10,
   },

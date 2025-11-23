@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+
+type Id_Arr_Type = [number, "user" | "group"]
+
 interface ChatsStateType {
-  selectedChatsIds: number[];
+  selectedChatsIds: Id_Arr_Type[];
 }
 
 const initialState: ChatsStateType = {
@@ -12,16 +15,16 @@ const chatsSlice = createSlice({
   name: "chats",
   initialState,
   reducers: {
-    toggleChatsSelection: (state, action: PayloadAction<number | "clear">) => {
-      const id = action.payload
-      if (id === "clear"){
+    toggleChatsSelection: (state, action: PayloadAction<Id_Arr_Type | "clear">) => {
+      if (action.payload === "clear") {
         state.selectedChatsIds = []
         return
       }
-      if (state.selectedChatsIds.includes(id))
-        state.selectedChatsIds = state.selectedChatsIds.filter(x => x !== id)
+      const id = action.payload[0]
+      if (state.selectedChatsIds.some(arr => arr[0] === id))
+        state.selectedChatsIds = state.selectedChatsIds.filter(arr => arr[0] !== id) //remove item
       else
-        state.selectedChatsIds = [...state.selectedChatsIds, id]
+        state.selectedChatsIds = [...state.selectedChatsIds, [...action.payload]]//add item
     }
   }
 });

@@ -23,7 +23,6 @@ export default function ContactsScreen() {
           setLoading(false);
           return;
         }
-
         const { data } = await Contacts.getContactsAsync({
           fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
         });

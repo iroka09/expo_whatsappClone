@@ -1,17 +1,20 @@
 
 import { useEffect } from "react";
 import { usePathname } from "expo-router";
-import { View, Pressable, Text, BackHandler, useColorScheme } from "react-native";
+import { View, Pressable, Text, BackHandler, Alert, useColorScheme } from "react-native";
 import ReAnimated, { useSharedValue, useAnimatedStyle, withTiming, interpolate } from "react-native-reanimated"
 import { MessageSquareText, MessageCircleHeart, UsersRound, Phone, } from "lucide-react-native"
+import ContactAndAiButtons from '@/components/ContactAndAiButtons';
+import { useChatsList } from "@/components/ChatsList"
 import constants from "@/data/constants.json"
+
 
 
 const {
   paddingHorizontal,
   colors: {
     themes: {
-      light: { secondary: light_secondary },
+      light: { primary, secondary: light_secondary },
       dark: { secondary: dark_secondary }
     }
   }
@@ -19,6 +22,7 @@ const {
 
 
 export default function CustomTabBar({ navigation }: any) {
+  const { newMessagesCount } = useChatsList()
   const animVal = useSharedValue(0)
   const pathname = usePathname()
   const isDarkMode = useColorScheme() === "dark"
@@ -49,50 +53,64 @@ export default function CustomTabBar({ navigation }: any) {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (pathname !== "/") {
         navigation.navigate("index"); // go to the first route
-        return true; // prevents app exit
+        return true
       }
-      return false; //allow closing of app
     })
     return () => sub.remove()
   }, [pathname])
   return (
-    <View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal, justifyContent: "space-between", borderTopWidth: .3 }} className="relative bg-theme dark:bg-theme-dark border-slate-300 dark:border-slate-800">
-      {([
-        [MessageSquareText, "index", "Chats"],
-        [MessageCircleHeart, "updates", "Updates"],
-        [UsersRound, "communities", "Communities"],
-        [Phone, "calls", "Calls"]
-      ] as const).map(([Icon, tabName, label]) => {
-        const isActive = (pathname === `/${tabName}`) || (pathname === "/" && tabName === "index")
-        return (
-          <Pressable
-            key={tabName}
-            onPress={() => {
-              navigation.navigate(tabName)
-            }}
-          >
-            <View style={{ alignItems: "center" }}>
-              <View
-                style={{
-                  position: "relative",
-                  paddingVertical: 5,
-                  paddingHorizontal: 25,
-                }}>
-                {isActive &&
-                  <ReAnimated.View
-                    style={[
-                      fabStyle,
-                      {
-                        position: "absolute",
-                        borderRadius: 999,
-                        overflow: "hidden",
-                        inset: 0,
-                        backgroundColor: isDarkMode ? dark_secondary : light_secondary,
-                      }]}
-                  />
-                }
-                {isActive ? (
-                  <ReAnimated.View style={fabIconStyle}>
+    <View className="relative">
+      <ContactAndAiButtons />
+      <View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal, justifyContent: "space-between", borderTopWidth: .3 }} className="relative bg-theme dark:bg-theme-dark border-slate-300 dark:border-slate-800">
+        {([
+          [MessageSquareText, "index", "Chats"],
+          [MessageCircleHeart, "updates", "Updates"],
+          [UsersRound, "communities", "Communities"],
+          [Phone, "calls", "Calls"]
+        ] as const).map(([Icon, tabName, label]) => {
+          const isActive = (pathname === `/${tabName}`) || (pathname === "/" && tabName === "index")
+          //     if (tabName === "index" && newMessagesCount > 0) console.log("yes:", newMessagesCount)
+          return (
+            <Pressable
+              key={tabName}
+              onPress={() => {
+                navigation.navigate(tabName)
+              }}
+            >
+              <View style={{ alignItems: "center" }}>
+                <View
+                  style={{
+                    position: "relative",
+                    paddingVertical: 5,
+                    paddingHorizontal: 25,
+                  }}
+                  className="flex-row"
+                >
+                  {isActive &&
+                    <ReAnimated.View
+                      style={[
+                        fabStyle,
+                        {
+                          position: "absolute",
+                          borderRadius: 999,
+                          overflow: "hidden",
+                          inset: 0,
+                          backgroundColor: isDarkMode ? dark_secondary : light_secondary,
+                        }]}
+                    />
+                  }
+                  {isActive ? (
+                    <ReAnimated.View style={fabIconStyle}>
+                      <Icon
+                        color={
+                          isActive ?
+                            (isDarkMode ? "#efea" : "#040")
+                            :
+                            (isDarkMode ? "white" : undefined)
+                        }
+                      />
+                    </ReAnimated.View>
+                  ) : (
                     <Icon
                       color={
                         isActive ?
@@ -101,25 +119,22 @@ export default function CustomTabBar({ navigation }: any) {
                           (isDarkMode ? "white" : undefined)
                       }
                     />
-                  </ReAnimated.View>
-                ) : (
-                  <Icon
-                    color={
-                      isActive ?
-                        (isDarkMode ? "#efea" : "#040")
-                        :
-                        (isDarkMode ? "white" : undefined)
-                    }
-                  />
-                )}
+                  )}
+                  {tabName === "index" && newMessagesCount > 0 && (
+                    <Text className="absolute flex-row rounded-full text-white dark:text-slate-900 right-5 top-[2] text-xs bg-amber-800 px-[4] font-medium"
+                      style={{ backgroundColor: primary }}>
+                      {newMessagesCount}
+                    </Text>
+                  )}
+                </View>
+                <Text style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }} className="dark:text-white">
+                  {label}
+                </Text>
               </View>
-              <Text style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }} className="dark:text-white">
-                {label}
-              </Text>
-            </View>
-          </Pressable>)
-      })}
-    </View>
+            </Pressable>)
+        })}
+      </View >
+    </View >
   );
 }
 

@@ -1,7 +1,6 @@
 
 import { Tabs } from "expo-router";
 import { View } from "react-native";
-import ContactAndAiButtons from '@/components/ContactAndAiButtons';
 import CustomTabBar from '@/components/CustomTabBar';
 
 export default function Layout() {
@@ -10,12 +9,7 @@ export default function Layout() {
       screenOptions={{
         headerShown: false,
       }}
-      tabBar={props => (
-        <View className="relative">
-          <CustomTabBar {...props} />
-          <ContactAndAiButtons />
-        </View>
-      )}
+      tabBar={props => <CustomTabBar {...props} />}
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="updates" />

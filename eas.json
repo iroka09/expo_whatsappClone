@@ -14,10 +14,15 @@
     "apk": {
       "android": {
         "buildType": "apk"
+        //"image": "ubuntu-18.04-jdk-11-ndk-r19c"
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle",
+        "image": "ubuntu-18.04-jdk-11-ndk-r19c"
+      }
     }
   },
   "submit": {
