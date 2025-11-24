@@ -52,9 +52,10 @@ async function sendLocalNotification(expoPushToken: string) {
         identifier,
         content: {
           title: n > 100 ? "Downloaded successfully ✅" : "🌐 Downloading...",
-          body: `${n}% completed.`,
-          // sound: "mixkit_software_interface_remove",
+          body: `${n > 100 ? 100 : n}% completed.`,
           data: { data: 'goes here', test: { test1: 'more data' } },
+          ...(n === 0 && { sound: "mixkit_software_interface_remove" }),
+          // sound: "mixkit_software_interface_remove",
           android: {
             channelId: "alert",
             progress: n,
@@ -62,19 +63,19 @@ async function sendLocalNotification(expoPushToken: string) {
             ongoing: true, // user can't remove it by swiping 
             importance: Notifications.AndroidImportance.MAX,
             actions: [
-        {
-          identifier: "reply",
-          buttonTitle: "Reply",
-          textInput: {
-            placeholder: "Type your answer",
-            submitButtonTitle: "Send",
-          },
-        },
-        {
-          identifier: "dismiss",
-          buttonTitle: "Dismiss",
-        },
-      ],
+              {
+                identifier: "reply",
+                buttonTitle: "Reply",
+                textInput: {
+                  placeholder: "Type your answer",
+                  submitButtonTitle: "Send",
+                },
+              },
+              {
+                identifier: "dismiss",
+                buttonTitle: "Dismiss",
+              },
+            ],
           },
         },
         trigger: null
@@ -155,15 +156,13 @@ export default function App() {
   React.useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(resp => {
       console.log("addNotificationResponseReceivedListener", resp)
-      //   const url = resp.notification.request.content.data.url;
-      // Linking.openURL(url);
     });
     return () => subscription.remove();
   }, []);
 
   React.useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(notification => {
-      console.log("addNotificationReceivedListener", notification);
+      // console.log("addNotificationReceivedListener", notification);
     });
     return () => subscription.remove();
   }, []);
@@ -189,20 +188,6 @@ export default function App() {
         }
       }
     });
-
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
-    return () => {
-      unsubscribeNetInfo.remove()
-      notificationListener.remove();
-      responseListener.remove();
-    };
   }, []);
 
   return (<>
