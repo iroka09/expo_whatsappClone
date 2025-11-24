@@ -55,6 +55,11 @@ Object.freeze(_Animated)
 let n = 0
 
 const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, ref) => {
+  const [remount, setRemount] = useState()
+  useEffect(() => {
+    //when app first mount,the animation doesn't work except if remounted so that it can read the layouts of modalImageLayout
+    setRemount(Math.random())
+  }, [])
   const safeAreaInsets = useSafeAreaInsets()
   const isDarkMode = useColorScheme() === "dark"
   const userSmallLeftProfilePictureLayout = useSharedValue({})
@@ -163,32 +168,34 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   const modalImageBottomBarStyle_for_close = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, [0.2, 0.3, 1.9, 2], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" }),
   }))
-  const mainModalImageStyle = useAnimatedStyle(() => ({
-    borderRadius: interpolate(progress.value, [0, 0.3, 1, 2], [modalImageLayout.value.width / 2, 0, 0, 0]),
-    overflow: progress.value < 2 ? "hidden" : "visible",
-    //opacity: interpolate(progress.value, [0, 0.01], [0, 1], { extrapolateRight: "clamp" }),
-  }))
+  const mainModalImageStyle = useAnimatedStyle(() => {
+    return ({
+      borderRadius: interpolate(progress.value, [0, 0.3, 1, 2], [modalImageLayout.value?.width / 2, 0, 0, 0]),
+      overflow: progress.value < 2 ? "hidden" : "visible",
+      //opacity: interpolate(progress.value, [0, 0.01], [0, 1], { extrapolateRight: "clamp" }),
+    })
+  })
   const modalImageBoxStyle_for_open = useAnimatedStyle(() => {
     //== X ==
     const width0 = userSmallLeftProfilePictureLayout.value?.width
-    const width1 = modalImageLayout.value.width
+    const width1 = modalImageLayout.value?.width
     const width2 = screenWidth + 2
     const scaleX0 = width0 / width1
     const scaleX1 = 1
     const scaleX2 = width2 / width1
-    const translateX0 = userSmallLeftProfilePictureLayout.value.pageX - (modalImageLayout.value.pageX + ((width1 - width0) / 2))
+    const translateX0 = userSmallLeftProfilePictureLayout.value?.pageX - (modalImageLayout.value?.pageX + ((width1 - width0) / 2))
     const translateX1 = 0
     const translateX2 = 0
     //== Y ==
-    const height0 = userSmallLeftProfilePictureLayout.value.height + ((modalImageBottomBarHeight / (modalImageLayout.value.height - modalImageBottomBarHeight)) * userSmallLeftProfilePictureLayout.value.height);
-    const height1 = modalImageLayout.value.height
+    const height0 = userSmallLeftProfilePictureLayout.value?.height + ((modalImageBottomBarHeight / (modalImageLayout.value?.height - modalImageBottomBarHeight)) * userSmallLeftProfilePictureLayout.value?.height);
+    const height1 = modalImageLayout.value?.height
     const height2 = screenWidth + modalImageBottomBarHeight
     const scaleY0 = height0 / height1
     const scaleY1 = 1
     const scaleY2 = height2 / height1
-    const translateY0 = userSmallLeftProfilePictureLayout.value.pageY - (modalImageLayout.value.pageY + ((height1 - height0) / 2))
+    const translateY0 = userSmallLeftProfilePictureLayout.value?.pageY - (modalImageLayout.value?.pageY + ((height1 - height0) / 2))
     const translateY1 = 0;
-    const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value.pageY) + ((height2 - height1) / 2)
+    const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value?.pageY) + ((height2 - height1) / 2)
     return ({
       transform: [
         {
@@ -211,24 +218,24 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   const modalImageBoxStyleForClosingFullscreenView = useAnimatedStyle(() => {
     //== X ==
     const width0 = userSmallLeftProfilePictureLayout.value?.width
-    const width1 = modalImageLayout.value.width
+    const width1 = modalImageLayout.value?.width
     const width2 = screenWidth + 2
     const scaleX0 = width0 / width1
     const scaleX1 = 1
     const scaleX2 = width2 / width1
-    const translateX0 = userSmallLeftProfilePictureLayout.value.pageX - (modalImageLayout.value.pageX + ((width1 - width0) / 2))
+    const translateX0 = userSmallLeftProfilePictureLayout.value?.pageX - (modalImageLayout.value?.pageX + ((width1 - width0) / 2))
     const translateX1 = 0
     const translateX2 = 0
     //== Y ==
-    const height0 = userSmallLeftProfilePictureLayout.value.height + ((modalImageBottomBarHeight / (modalImageLayout.value.height - modalImageBottomBarHeight)) * userSmallLeftProfilePictureLayout.value.height);
-    const height1 = modalImageLayout.value.height
+    const height0 = userSmallLeftProfilePictureLayout.value?.height + ((modalImageBottomBarHeight / (modalImageLayout.value?.height - modalImageBottomBarHeight)) * userSmallLeftProfilePictureLayout.value?.height);
+    const height1 = modalImageLayout.value?.height
     const height2 = screenWidth + modalImageBottomBarHeight
     const scaleY0 = height0 / height1
     const scaleY1 = 1
     const scaleY2 = height2 / height1
-    const translateY0 = userSmallLeftProfilePictureLayout.value.pageY - (modalImageLayout.value.pageY + ((height1 - height0) / 2))
+    const translateY0 = userSmallLeftProfilePictureLayout.value?.pageY - (modalImageLayout.value?.pageY + ((height1 - height0) / 2))
     const translateY1 = 0;
-    const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value.pageY) + ((height2 - height1) / 2)
+    const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value?.pageY) + ((height2 - height1) / 2)
     return ({
       transform: [
         {
@@ -299,6 +306,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           { opacity: userImageModalObj ? 1 : 0 }
         ]}
         pointerEvents={userImageModalObj ? "auto" : "none"}
+      //className="bg-blue-700/50"
       >
         <Pressable
           onPress={() => {
@@ -352,14 +360,15 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
               width: modalImageBoxWidth,
               height: modalImageBoxHeight,
               top: ((screenHeight - screenWidth) / 3),
-              left: modalImageBoxMarginHorizontal
+              left: modalImageBoxMarginHorizontal,
+              //opacity: 0
             },
             loadedLayouts ?
               (modalImageViewState !== "fully-opened" ? modalImageBoxStyle_for_open : modalImageBoxStyleForClosingFullscreenView)
               :
               undefined,
           ]}
-          onLayout={() => {
+          onLayout={(e) => {
             runOnUI(() => {
               modalImageLayout.value = measure(modalImageBoxRef)
               runOnJS(setLoadedLayouts)(true)
@@ -465,7 +474,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           </Animated.View>
         </Animated.View>
       </Animated.View>
-    </Portal>
+    </Portal >
   )
 })
 

@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -45,19 +45,50 @@ async function sendPushNotification(expoPushToken: string) {
 }
 
 async function sendLocalNotification(expoPushToken: string) {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: 'Here is the notification body',
-      sound: "mixkit_software_interface_remove.wav",
-      data: { data: 'goes here', test: { test1: 'more data' } },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: 0,
-      channelId: "alert"
-    },
-  });
+  let n = 0, identifier = "id-3433"
+  function run() {
+    setTimeout(() => {
+      Notifications.scheduleNotificationAsync({
+        identifier,
+        content: {
+          title: n > 100 ? "Downloaded successfully ✅" : "🌐 Downloading...",
+          body: `${n}% completed.`,
+          // sound: "mixkit_software_interface_remove",
+          data: { data: 'goes here', test: { test1: 'more data' } },
+          android: {
+            channelId: "alert",
+            progress: n,
+            maxProgress: 100,
+            ongoing: true, // user can't remove it by swiping 
+            importance: Notifications.AndroidImportance.MAX,
+            actions: [
+        {
+          identifier: "reply",
+          buttonTitle: "Reply",
+          textInput: {
+            placeholder: "Type your answer",
+            submitButtonTitle: "Send",
+          },
+        },
+        {
+          identifier: "dismiss",
+          buttonTitle: "Dismiss",
+        },
+      ],
+          },
+        },
+        trigger: null
+      });
+      n += 3
+      if (n < 103) run()
+      else {
+        setTimeout(() => {
+          Notifications.dismissNotificationAsync(identifier);
+        }, 2000)
+      }
+    }, 200)
+  }
+  run()
 }
 
 
@@ -79,7 +110,7 @@ async function registerForPushNotificationsAsync() {
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 150, 250],
       lightColor: '#44231F7C',
-      sound: "mixkit_software_interface_remove.wav"
+      sound: "mixkit_software_interface_remove"
     });
   }
 
@@ -121,8 +152,23 @@ export default function App() {
     undefined
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(resp => {
+      console.log("addNotificationResponseReceivedListener", resp)
+      //   const url = resp.notification.request.content.data.url;
+      // Linking.openURL(url);
+    });
+    return () => subscription.remove();
+  }, []);
 
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      console.log("addNotificationReceivedListener", notification);
+    });
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
     function initializePushNotifications() {
       registerForPushNotificationsAsync()
         .then(async token => {
@@ -160,7 +206,7 @@ export default function App() {
   }, []);
 
   return (<>
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around',marginBottom:5 }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around', marginBottom: 5 }}>
       <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>

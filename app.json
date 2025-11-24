@@ -1,6 +1,6 @@
 {
   "expo": {
-    "jsEngine": "hermes",
+    "jsEngine": "jsc",
     "name": "WhatsApp-Clone",
     "slug": "whatsapp-clone",
     "owner": "iroka09",
@@ -61,6 +61,14 @@
             "./assets/sounds/mixkit_software_interface_remove.wav"
           ],
           "enableBackgroundRemoteNotifications": false
+        }
+      ],
+       [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/images/me.jpg"
+          ]
         }
       ]
     ],

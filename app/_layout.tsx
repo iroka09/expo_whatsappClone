@@ -5,7 +5,7 @@ import { store } from "@/redux/store";
 import { Stack } from "expo-router";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View, Alert, Text, Image, useColorScheme, UIManager, Platform, BackHandler } from 'react-native';
+import { View, Alert, Text, Image, useColorScheme, UIManager, Platform, BackHandler, ToastAndroid } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import PortalProvider from "@/components/Portal"
@@ -38,21 +38,39 @@ function Splash() {
 }
 
 
+let willExit = false
+let tm
 function Layout() {
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      Alert.alert("Exit App", "Do you want to exit?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        {
-          text: "Exit",
-          onPress: () => BackHandler.exitApp()
+      function byTiming() {
+        clearTimeout(tm)
+        if (willExit) {
+          willExit = false
+          BackHandler.exitApp()
+          return false
         }
-      ]);
-      return true // prevents app exit
+        willExit = true
+        tm = setTimeout(() => { willExit = false }, 3000)
+        ToastAndroid.showWithGravity("Press again to exit.", ToastAndroid.SHORT, ToastAndroid.CENTER)
+        return true
+      }
+      function byAlertWindow() {
+        Alert.alert("Exit App", "Do you want to exit?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Exit",
+            onPress: () => BackHandler.exitApp()
+          }
+        ]);
+        return true
+      }
+      return byTiming()
+      //return byAlertWindow()
     })
     return () => sub.remove()
   }, [])

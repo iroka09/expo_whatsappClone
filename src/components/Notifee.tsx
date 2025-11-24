@@ -59,7 +59,7 @@ async function sendLocalNotification() {
       // --- COLOR around the smallIcon (optional) ---
       color: '#00ff00',//green
       // --- Custom sound ---
-      sound: 'mixkit_software_interface_remove',
+      sound: 'mixkit_software_interface_remove.wav',
       // --- When tapped, open the app ---
       pressAction: {
         id: 'open-app',

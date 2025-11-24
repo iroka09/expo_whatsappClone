@@ -1,22 +1,26 @@
-import React from 'react';
-import { View, Button, Alert,Text } from 'react-native';
+
+import { lazy } from 'react';
+import { View, Button, Alert, Text } from 'react-native';
 import ExpoNotifications from '@/components/ExpoNotifications'
-import Notifee from '@/components/Notifee'
+const Notifee = lazy(() => import('@/components/Notifee'))
 
 
-function Screen() {
-
+function App() {
   return (
     <View className="flex-1 justify-center items-center gap-5">
-    <Text>Hello world.</Text>
       {
+        __DEV__ ?
           <>
-          <Notifee />
-          <ExpoNotifications />
-        </>
+            <ExpoNotifications />
+          </>
+          :
+          <>
+            <ExpoNotifications />
+            <Notifee />
+          </>
       }
     </View>
   );
 }
 
-export default Screen
+export default App
