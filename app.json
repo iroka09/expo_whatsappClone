@@ -1,6 +1,6 @@
 {
   "expo": {
-    "jsEngine": "jsc",
+    "jsEngine": "hermes",
     "name": "WhatsApp-Clone",
     "slug": "whatsapp-clone",
     "owner": "iroka09",
