@@ -11,7 +11,7 @@ function App() {
       {
         __DEV__ ?
           <>
-            <ExpoNotifications />
+            {/*<ExpoNotifications />*/}
           </>
           :
           <>

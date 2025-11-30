@@ -45,19 +45,52 @@ async function sendPushNotification(expoPushToken: string) {
 }
 
 async function sendLocalNotification(expoPushToken: string) {
+  Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Downloaded successfully",
+      body: `You have to completed the job how people have forgotten for her number but give me names but because very true here but not very good for fun d how much money know lol lol lol l k you to.`,
+      data: { data: 'goes here', test: { test1: 'more data' } },
+      sound: "mixkit_software_interface_remove",
+      android: {
+        //channelId: "alert",
+        maxProgress: 100,
+        ongoing: true, // user can't remove it by swiping 
+        importance: Notifications.AndroidImportance.MAX,
+        actions: [
+          {
+            identifier: "reply",
+            buttonTitle: "Reply",
+            textInput: {
+              placeholder: "Type your answer",
+              submitButtonTitle: "Send",
+            },
+          },
+          {
+            identifier: "dismiss",
+            buttonTitle: "Dismiss",
+          },
+        ],
+      },
+    },
+    trigger: null
+  });
+}
+
+/*
+async function sendLocalNotification(expoPushToken: string) {
   let n = 0, identifier = "id-3433"
   function run() {
     setTimeout(() => {
       Notifications.scheduleNotificationAsync({
         identifier,
         content: {
-          title: n > 100 ? "Downloaded successfully ✅" : "🌐 Downloading...",
+          title: n >= 100 ? "Downloaded successfully ✅" : "⬇️ Downloading...",
           body: `${n > 100 ? 100 : n}% completed.`,
           data: { data: 'goes here', test: { test1: 'more data' } },
-          ...(n === 0 && { sound: "mixkit_software_interface_remove" }),
+         // ...(n === 0 && { sound: "mixkit_software_interface_remove" }),
           // sound: "mixkit_software_interface_remove",
           android: {
-            channelId: "alert",
+            // channelId: "alert",
             progress: n,
             maxProgress: 100,
             ongoing: true, // user can't remove it by swiping 
@@ -85,13 +118,13 @@ async function sendLocalNotification(expoPushToken: string) {
       else {
         setTimeout(() => {
           Notifications.dismissNotificationAsync(identifier);
-        }, 2000)
+        }, 5000)
       }
     }, 200)
   }
   run()
 }
-
+*/
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -139,10 +172,12 @@ async function registerForPushNotificationsAsync() {
       ).data;
       console.log(pushTokenString);
       return pushTokenString;
-    } catch (e: unknown) {
+    } 
+    catch (e: unknown) {
       handleRegistrationError(`${e}`);
     }
-  } else {
+  } 
+  else {
     handleRegistrationError('Must use physical device for push notifications');
   }
 }

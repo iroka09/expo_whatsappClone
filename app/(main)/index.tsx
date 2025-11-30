@@ -13,7 +13,6 @@ import { useRouter, usePathname } from "expo-router"
 import Animated, { useAnimatedRef, FadeIn, FadeOut, ZoomIn, ZoomOut } from "react-native-reanimated"
 import { StatusBar } from 'expo-status-bar';
 import Popup from '@/components/PopupMenu';
-
 import type BottomSheetType from "@gorhom/bottom-sheet";
 const BottomSheet = lazy(() => import("@gorhom/bottom-sheet"));
 const BottomSheetScrollView = lazy(() => import("@gorhom/bottom-sheet").then(x => ({ default: x.BottomSheetScrollView })));
@@ -234,7 +233,7 @@ const ListItemOfUser = ({ item, profilePictureModalRef }) => {
           delayLongPress={300}
           onLongPress={() => _toggleChatsSelection([item.id, item.type], !isSelectionEnabled())}
           onPress={() => {
-            profilePictureModalRef.current.openModal(item, imageBoxRef)
+            profilePictureModalRef.current.openModal({user:item, animatedRef:imageBoxRef})
           }}
         >
           <View style={{ position: "relative" }}>

@@ -21,7 +21,7 @@ export default function ContactAndAiButtons() {
     transform: [{
       translateY: interpolate(animVal.value, [0, 100], [0, 50])
     }],
-    opacity: interpolate(animVal.value, [0, 50], [1, 0])
+    opacity: interpolate(animVal.value, [0, 50], [1, 0], { extrapolateRight: "clamp" })
   }))
   const removeButton = () => setIsButtonVisible(false)
   useLayoutEffect(() => {
@@ -33,7 +33,8 @@ export default function ContactAndAiButtons() {
       setTopButtonIconName("edit")
       setBottomButtonIconName("camera-plus")
     }
-    if (pathname === "/calls") setBottomButtonIconName("phone-plus")
+    if (pathname === "/calls") 
+    setBottomButtonIconName("phone-plus")
     if (isAllowedPath) setIsButtonVisible(true)
     animVal.value = withTiming(isAllowedPath && pathname !== "/calls" ? 0 : 100, {}, (isFinished) => {
       if (isFinished && !isAllowedPath) {
