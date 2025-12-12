@@ -1,96 +1,60 @@
 
-import { Alert, Button } from "react-native"
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import "@/libs/notifee_events"
+import { useState, useEffect } from "react"
+import { Alert, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from "react-native"
+import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
 
 
-// Handle actions when app is running
-notifee.onForegroundEvent(({ type, detail }) => {
-  if (type === EventType.ACTION_PRESS) {
-    const { pressAction, input, notification } = detail;
-
-    switch (pressAction.id) {
-      case 'reply':
-        Alert.alert('User replied:', input);
-        break;
-
-      case 'mark-read':
-        Alert.alert('Marked as read');
-        notifee.cancelNotification(notification.id);
-        break;
-
-      case 'delete':
-        Alert.alert('Message deleted');
-        notifee.cancelNotification(notification.id);
-        break;
-
-      case 'open-app':
-        Alert.alert('User opened the app');
-        break;
-    }
-  }
-});
-
-
-async function sendLocalNotification() {
-  // Request permissions (iOS & Android 13+)
-  await notifee.requestPermission();
-
-  // Create notification channel
+async function showBigPictureWithActions() {
   const channelId = await notifee.createChannel({
-    id: 'important',
-    name: 'Important Notifications',
+    id: 'important2',
+    name: 'Important Notifications 2',
     sound: 'mixkit_software_interface_remove',        // your custom sound
     importance: AndroidImportance.HIGH,
     vibration: true,
   });
 
-  // Display the notification
   await notifee.displayNotification({
-    id: 'unique-id-001',
-    title: 'Message from Sarah',
-    subtitle: 'Tap to open',
-    body: 'Hello world!',
+    title: 'Amani Trending Video',
+    body: 'Tap an action below',
     android: {
       channelId,
-      // --- SMALL ICON (must be native resource) ---
-      smallIcon: 'LC', // only the name, no extension
-      // --- LARGE ICON from assets ---
-      largeIcon: require('@/assets/images/me.jpg'),
-      // --- COLOR around the smallIcon (optional) ---
-      color: '#00ff00',//green
-      // --- Custom sound ---
-      sound: 'mixkit_software_interface_remove.wav',
-      // --- When tapped, open the app ---
-      pressAction: {
-        id: 'open-app',
+      smallIcon: 'notification_icon',
+      pressAction: { id: 'open-app' },
+      style: {
+        type: AndroidStyle.BIGPICTURE,
+        picture: "amani",
       },
-      autoCancel: false,//If false, the notification will persist in the notification panel after being pressed. It will remain there until the user removes it (e.g. swipes away)
-      // --- Notification buttons ---
+      // largeIcon: "amani",
+      // -- ACTION BUTTONS --
       actions: [
         {
+          title: 'Play',
+          pressAction: { id: 'play-video' },
+          // optional icon:
+          icon: "play",
+        },
+        {
+          title: 'Download',
+          pressAction: { id: 'download-video' },
+        },
+        {
           title: 'Reply',
-          pressAction: { id: 'reply' },
-          input: true,            // opens input box
-        },
-        {
-          title: 'Mark Read',
-          pressAction: { id: 'mark-read' },
-        },
-        {
-          title: 'Delete',
-          pressAction: { id: 'delete' },
-        },
+          pressAction: { id: 'reply-video' },
+          input: { placeholder: "Enter your message..." }
+        }
       ],
     },
   });
 }
 
+
 export default function NotifeeApp() {
   return (
     <Button
-      title="Press to Send Local Notifee Notification"
+      title="Display Notifee Notification"
       onPress={async () => {
-        await sendLocalNotification();
+        await showBigPictureWithActions();
       }}
     />
   )

@@ -1,48 +1,23 @@
+
 import { ComponentProps } from "react"
-import { View, ViewStyle, Pressable } from "react-native";
-import RippleButton from "react-native-advanced-ripple"
+import { View, Text } from "react-native";
+import { BorderlessButton } from 'react-native-gesture-handler';
+import * as React from 'react';
 
 
-type IconButtonType = ComponentProps<typeof View> & {
-  chip?: boolean,
-  ripple_color?: string,
-  containerStyle?: ViewStyle,
-  paddingHorizontal?: number
-}
+type IconButtonType = ComponentProps<typeof BorderlessButton>
 
 
-export default function IconButton({ children, containerStyle = {}, padding = 10, ripple_color = "#ccc", chip, onPress, onPressIn, onPressOut, onLongPress, ...props }: IconButtonType) {
+export default function IconButton({ children, style = {}, containerStyle = {}, containerClassName = "", containerProps = {}, ...props }: IconButtonType) {
   return (
     <View
-      style={{
-        borderRadius: 999,
-        // borderWidth: 4,
-        overflow: "hidden",
-        ...containerStyle,
-      }}
-      {...props}
+      className={"items-center justify-center overflow-hidden rounded-full" + containerClassName}// borderless=true works because of this patent's overflow-hidden and rounded-full, otherwise it will only show on the first ancestors in the tree of which this direct parent backgroundColor can make it invisible 
+      style={[containerStyle]}
+      {...containerProps}
     >
-      <RippleButton
-        color={ripple_color}
-        rippleSize={500}
-        duration={1000}
-        centered={false}
-        onPress={onPress}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onLongPress={onLongPress}
-      >
-        <View
-          style={{
-            padding,
-            justifyContent: "center",
-            alignItems: "center",
-            ...chip ? { paddingVertical: 6 } : {}
-          }}
-        >
-          {children}
-        </View>
-      </RippleButton>
+      <BorderlessButton style={[{ padding: 7 }, style]} rippleColor="#9995" {...props}>
+        <View assesibility assesibilityRole="button">{children}</View>
+      </BorderlessButton >
     </View>
   )
 }

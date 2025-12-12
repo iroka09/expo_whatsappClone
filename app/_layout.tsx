@@ -6,15 +6,15 @@ import { Stack } from "expo-router";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Alert, Text, Image, useColorScheme, UIManager, Platform, BackHandler, ToastAndroid } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import PortalProvider from "@/components/Portal"
-import * as NavigationBar from 'expo-navigation-bar';
-import ChatsListProvider from "@/components/ChatsList"
+import { PaperProvider } from "react-native-paper";
+import { KeyboardProvider } from "react-native-keyboard-controller";
+//import * as SplashScreen from 'expo-splash-screen';
+//import { StatusBar } from 'expo-status-bar';
+//import * as NavigationBar from 'expo-navigation-bar';
 import "../global.css"
 
 
-
+/*
 function Splash() {
   return (
     <SafeAreaProvider >
@@ -36,11 +36,11 @@ function Splash() {
     </SafeAreaProvider>
   )
 }
-
+*/
 
 let willExit = false
 let tm
-function Layout() {
+export default function Layout() {
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       function byTiming() {
@@ -51,8 +51,8 @@ function Layout() {
           return false
         }
         willExit = true
-        tm = setTimeout(() => { willExit = false }, 3000)
-        ToastAndroid.showWithGravity("Press again to exit.", ToastAndroid.SHORT, ToastAndroid.CENTER)
+        tm = setTimeout(() => { willExit = false }, 2000)
+        ToastAndroid.showWithGravityAndOffset("Press again to exit.", ToastAndroid.SHORT, ToastAndroid.BOTTOM, 0, 0)
         return true
       }
       function byAlertWindow() {
@@ -77,38 +77,38 @@ function Layout() {
   return (
     <ReduxProvider store={store} >
       <GestureHandlerRootView>
-        <PortalProvider>
-          <ChatsListProvider>
+        <KeyboardProvider>
+          <PaperProvider>
             <SafeAreaProvider>
               <SafeAreaView className="flex-1 bg-theme dark:bg-theme-dark">
                 <Stack
                   screenOptions={{
                     headerShown: false,
+                    presentation: "card",
                     animation: "slide_from_right",
                     animationTypeForReplace: "push",
                     gestureEnabled: true,
                   }}
                 >
+
+                  <Stack.Screen name="index" />
                   <Stack.Screen
                     name="(main)"
-                    options={{
-                      headerShown: false,
-                    }}
+                    options={{ headerShown: false }}
                   />
                   <Stack.Screen
                     name="contacts"
-                    options={{
-                      animation: "slide_from_right",
-                      presentation: "card",
-                      gestureEnabled: true,
-                      animationTypeForReplace: "push",
-                    }}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="conversation/[user_id]"
+                    options={{ headerShown: false }}
                   />
                 </Stack>
               </SafeAreaView>
             </SafeAreaProvider>
-          </ChatsListProvider>
-        </PortalProvider>
+          </PaperProvider>
+        </KeyboardProvider>
       </GestureHandlerRootView>
     </ReduxProvider>
   );
@@ -116,7 +116,7 @@ function Layout() {
 
 
 //SplashScreen.preventAutoHideAsync();
-
+/*
 function CustomLayout() {
   const [isReady, setIsReady] = useState(false);
   const isDark = useColorScheme() === 'dark';
@@ -149,6 +149,4 @@ function CustomLayout() {
       </>
   )
 }
-
-//export default CustomLayout
-export default Layout 
+*/

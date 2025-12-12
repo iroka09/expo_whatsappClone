@@ -1,10 +1,11 @@
 
-import { useState, useEffect, useLayoutEffect, memo, useCallback, useMemo, useRef, useImperativeHandle, forwardRef, useTransition } from "react"
-import { View, Text, Pressable, TextInput, ScrollView, FlatList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, Dimensions, ActivityIndicator, ToastAndroid } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate, measure, useAnimatedRef, useDerivedValue, Easing, withDelay } from "react-native-reanimated"
+import { useState, useEffect, useLayoutEffect, memo, useCallback, useMemo, useRef, useImperativeHandle, forwardRef } from "react"
+import { View, Text, Pressable, TextInput, ScrollView, FlatList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, Dimensions, ActivityIndicator, ToastAndroid, Modal } from "react-native";
+import { Portal } from "react-native-paper";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate, measure, useAnimatedRef, useDerivedValue, Easing, withDelay, cancelAnimation } from "react-native-reanimated"
 import { runOnUI, runOnJS } from "react-native-worklets"
 import ImageZoom from "@/components/ImageZoom"
-import { Portal } from "@/components/Portal"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import IconButton from "@/components/IconButton"
 import { Camera, Search, Plus, ArchiveRestore, CheckCheck, Check, EllipsisVertical, Pin, ArrowLeft, BellOff, Trash } from "lucide-react-native"
@@ -57,10 +58,10 @@ let n = 0
 const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, ref) => {
   const [remount, setRemount] = useState()
   useEffect(() => {
+    return
     //when app first mount,the animation box refuses to show sometimes but if remounted so that it can read the layouts of modalImageLayout, it shows
     setRemount(Math.random())
   }, [])
-  const [isTransitioning, startTransition] = useTransition()
   const safeAreaInsets = useSafeAreaInsets()
   const isDarkMode = useColorScheme() === "dark"
   const userSmallLeftProfilePictureLayout = useSharedValue({})
@@ -70,24 +71,6 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   const [loadedHighQualityAvatar, setLoadedHighQualityAvatar] = useState<string[]>([])
   const progress = useSharedValue(0)//012
   const [modalImageViewState, setModalImageViewState] = useState<"closed" | "half-opened" | "fully-opened">("closed")
-  /* useDerivedValue(() => {
-     return
-     console.log(
-       interpolate(progress.value, [0, 1, 2], [0, 100, 500],
-         {
-           extrapolateRight: "clamp",
-           extrapolateLeft: "clamp"
-         }
-       ) + "px"
-     )
-   })
-   const modalImageViewState_worklet = useSharedValue<"closed" | "half-opened" | "fully-opened">("closed")
-   useDerivedValue(() => {
-     if (progress.value === 0) modalImageViewState_worklet.value = "closed"
-     if (progress.value === 1) modalImageViewState_worklet.value = "half-opened"
-     if (progress.value === 2) modalImageViewState_worklet.value = "fully-opened"
-     console.log(modalImageViewState_worklet.value)
-   })*/
   const imageZoomRef = useRef({})
   //==modal image layout measure
   const modalImageBoxRef = useAnimatedRef()
@@ -136,46 +119,38 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   //=====open anim
   const openProfilePictureModal = useCallback((user, imageBoxRef) => {
     setUserImageModalObj({ id: user.id, name: user.name || user.phone, avatar: user.avatar })
-    startTransition(() => {
-      runOnUI(() => {
-        "worklet"
-        const val = measure(imageBoxRef)
-        if (val) {
-          userSmallLeftProfilePictureLayout.value = val
-          progress.value = withTiming(1, { duration: durationIn, easing: Easing.linear }, finished => {
-            if (finished) {
-              runOnJS(setModalImageViewState)("half-opened")
-            }
-          })
-        }
-      })()
-    })
+    runOnUI(() => {
+      "worklet"
+      const val = measure(imageBoxRef)
+      if (val) {
+        userSmallLeftProfilePictureLayout.value = val
+        progress.value = withTiming(1, { duration: durationIn, easing: Easing.linear }, finished => {
+          if (finished) {
+            runOnJS(setModalImageViewState)("half-opened")
+          }
+        })
+      }
+    })()
   }, [])
   const openProfilePictureModalToFull = useCallback(() => {
-    startTransition(() => {
-      progress.value = withTiming(2, { duration: durationIn_fullscreen, easing: Easing.linear }, finished => {
-        if (finished) {
-          runOnJS(setModalImageLoadingActivityIndicatorVisible)(true)
-          runOnJS(setModalImageViewState)("fully-opened")
-        }
-      })
+    progress.value = withTiming(2, { duration: durationIn_fullscreen, easing: Easing.linear }, finished => {
+      if (finished) {
+        runOnJS(setModalImageViewState)("fully-opened")
+        runOnJS(setModalImageLoadingActivityIndicatorVisible)(true)
+      }
     })
   }, [])
-  const closeProfilePictureModal = useCallback((delay = 0) => {
+  const closeProfilePictureModal = useCallback((prop) => {
+    let { delay = 0, animate = true } = prop || {}
     retryCallIdRef.current = 0
     setModalImageLoadingActivityIndicatorVisible(false)
-    const closeFn = () => {
-      setUserImageModalObj(null)
-      setModalImageViewState("closed")
-    }
-    const { resetZoom, inZoom } = imageZoomRef.current
-    if (inZoom) {
-      resetZoom()
-      delay = 100
-    }
-    startTransition(() => {
+    const closeFn = () => { setModalImageViewState("closed"); setUserImageModalObj(null) }
+    const { resetZoom, inZoom } = imageZoomRef.current || {}
+    if (inZoom) { resetZoom(); delay = 100 }
+    if (animate)
       progress.value = withDelay(delay, withTiming(0, { duration: durationOut, easing: Easing.linear }, (finished) => { if (finished) runOnJS(closeFn)() }))
-    })
+    else { progress.value = 0; closeFn() };
+
   }, [])
   const backdropOpacityStyle = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, [0, 1, 2], [0, 0.6, 1])
@@ -220,6 +195,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
     const translateY0 = userSmallLeftProfilePictureLayout.value?.pageY - (modalImageLayout.value?.pageY + ((height1 - height0) / 2))
     const translateY1 = 0;
     const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value?.pageY) + ((height2 - height1) / 2)
+    const initialBorderRadius = (modalImageBoxInitialBorderRadius / width0) * width1
     return ({
       transform: [
         {
@@ -235,7 +211,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           scaleY: interpolate(progress.value, [0, 1, 2], [scaleY0, scaleY1, scaleY2])
         }
       ],
-      borderRadius: interpolate(progress.value, [0, 1, 2], [width1 / 2, 0, 0]),
+      borderRadius: interpolate(progress.value, [0, 1, 2], [initialBorderRadius, 0, 0]),
       overflow: "hidden",
     })
   })
@@ -260,6 +236,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
     const translateY0 = userSmallLeftProfilePictureLayout.value?.pageY - (modalImageLayout.value?.pageY + ((height1 - height0) / 2))
     const translateY1 = 0;
     const translateY2 = (((screenHeight - screenWidth) / 2) - modalImageLayout.value?.pageY) + ((height2 - height1) / 2)
+    const initialBorderRadius = (modalImageBoxInitialBorderRadius / width0) * width1
     return ({
       transform: [
         {
@@ -275,7 +252,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           scaleY: interpolate(progress.value, [0, 2], [scaleY0, scaleY2])
         }
       ],
-      borderRadius: interpolate(progress.value, [0, 2], [width1 / 2, 0]),
+      borderRadius: interpolate(progress.value, [0, 2], [initialBorderRadius, 0]),
       overflow: (progress.value < 2) ? "hidden" : "visible",
     })
   })
@@ -287,6 +264,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   }, [userImageModalObj])
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      alert(modalImageViewState)
       if (modalImageViewState !== "closed") {
         closeProfilePictureModal()
         return true; // prevents app exit
@@ -316,8 +294,8 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
     openModal({ user, animatedRef: imageBoxRef }) {
       openProfilePictureModal(user, imageBoxRef)
     },
-    closeModal() {
-      closeProfilePictureModal()
+    closeModal(x) {
+      closeProfilePictureModal(x)
     },
     get viewState() {
       return modalImageViewState
@@ -331,7 +309,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           { opacity: userImageModalObj ? 1 : 0 }
         ]}
         pointerEvents={userImageModalObj ? "auto" : "none"}
-      //className="bg-blue-700/50"
+       // className="bg-blue-700/50"
       >
         <Pressable
           onPress={() => {
@@ -496,7 +474,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           </Animated.View>
         </Animated.View>
       </Animated.View>
-    </Portal >
+    </Portal>
   )
 })
 

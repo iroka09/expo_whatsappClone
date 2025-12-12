@@ -13,7 +13,7 @@ export default function ContactAndAiButtons() {
   const router = useRouter()
   const isDarkMode = useColorScheme() === "dark"
   const pathname = usePathname()
-  const isAllowedPath = useRef(["/", "/updates", "/calls"]).current.includes(pathname)
+  const isAllowedPath = useRef(["/chats", "/updates", "/calls"]).current.includes(pathname)
   const [isButtonVisible, setIsButtonVisible] = useState(isAllowedPath)
   const [topButtonIconName, setTopButtonIconName] = useState<string>()
   const [bottomButtonIconName, setBottomButtonIconName] = useState<string>()
@@ -25,7 +25,8 @@ export default function ContactAndAiButtons() {
   }))
   const removeButton = () => setIsButtonVisible(false)
   useLayoutEffect(() => {
-    if (pathname === "/") {
+   // alert(pathname)
+    if (pathname === "/chats") {
       setTopButtonIconName("image")
       setBottomButtonIconName("message-plus")
     }
@@ -33,8 +34,8 @@ export default function ContactAndAiButtons() {
       setTopButtonIconName("edit")
       setBottomButtonIconName("camera-plus")
     }
-    if (pathname === "/calls") 
-    setBottomButtonIconName("phone-plus")
+    if (pathname === "/calls")
+      setBottomButtonIconName("phone-plus")
     if (isAllowedPath) setIsButtonVisible(true)
     animVal.value = withTiming(isAllowedPath && pathname !== "/calls" ? 0 : 100, {}, (isFinished) => {
       if (isFinished && !isAllowedPath) {

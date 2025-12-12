@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Platform } from 'react-native';
+import { Text, View, Button, Platform, TextInput, KeyboardAvoidingView } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -172,11 +172,11 @@ async function registerForPushNotificationsAsync() {
       ).data;
       console.log(pushTokenString);
       return pushTokenString;
-    } 
+    }
     catch (e: unknown) {
       handleRegistrationError(`${e}`);
     }
-  } 
+  }
   else {
     handleRegistrationError('Must use physical device for push notifications');
   }
@@ -226,25 +226,35 @@ export default function App() {
   }, []);
 
   return (<>
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around', marginBottom: 5 }}>
+    <KeyboardAvoidingView
+      behavior="height"
+      keyboardVerticalOffset={40} // adjust based on your header height
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: 5 }}
+    >
       <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
         <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
-      {/* <Button
+      <TextInput
+        placeholder="Enter channel..."
+        // onChangeText={(x) => setChannelData(x)}
+        multiline
+        className="border-2 border-purple-400 rounded-md px-1 monospace"
+      />
+      <Button
         title="Press to Send Push Notification"
         onPress={async () => {
           await sendPushNotification(expoPushToken);
         }}
-      />*/}
+      />
       <Button
         title="Press to Send Local Expo-Notification"
         onPress={async () => {
           await sendLocalNotification();
         }}
       />
-    </View>
+    </KeyboardAvoidingView>
   </>);
 }

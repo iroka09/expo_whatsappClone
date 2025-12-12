@@ -1,11 +1,11 @@
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { usePathname } from "expo-router";
 import { View, Pressable, Text, BackHandler, Alert, useColorScheme } from "react-native";
 import ReAnimated, { useSharedValue, useAnimatedStyle, withTiming, interpolate } from "react-native-reanimated"
 import { MessageSquareText, MessageCircleHeart, UsersRound, Phone, } from "lucide-react-native"
 import ContactAndAiButtons from '@/components/ContactAndAiButtons';
-import { useChatsList } from "@/components/ChatsList"
+import { useSelector } from "react-redux";
 import constants from "@/data/constants.json"
 
 
@@ -22,7 +22,7 @@ const {
 
 
 export default function CustomTabBar({ navigation }: any) {
-  const { newMessagesCount } = useChatsList()
+  const newMessagesCount = useSelector((state: RootState) => state.chats.unreadCount.length);
   const animVal = useSharedValue(0)
   const pathname = usePathname()
   const isDarkMode = useColorScheme() === "dark"
@@ -43,7 +43,7 @@ export default function CustomTabBar({ navigation }: any) {
       scale: interpolate(animVal.value, [0, 0.8, 1], [0.9, 1.2, 1])
     }]
   }))
-  useEffect(() => {
+  useLayoutEffect(() => {
     animVal.value = withTiming(1)
     return () => {
       animVal.value = 0
@@ -51,8 +51,8 @@ export default function CustomTabBar({ navigation }: any) {
   }, [pathname])
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (pathname !== "/") {
-        navigation.navigate("index"); // go to the first route
+      if (pathname !== "/chats") {
+        navigation.navigate("chats"); // go to the first route
         return true
       }
     })
@@ -63,13 +63,13 @@ export default function CustomTabBar({ navigation }: any) {
       <ContactAndAiButtons />
       <View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal, justifyContent: "space-between", borderTopWidth: .3 }} className="relative bg-theme dark:bg-theme-dark border-slate-300 dark:border-slate-800">
         {([
-          [MessageSquareText, "index", "Chats"],
+          [MessageSquareText, "chats", "Chats"],
           [MessageCircleHeart, "updates", "Updates"],
           [UsersRound, "communities", "Communities"],
           [Phone, "calls", "Calls"]
         ] as const).map(([Icon, tabName, label]) => {
-          const isActive = (pathname === `/${tabName}`) || (pathname === "/" && tabName === "index")
-          //     if (tabName === "index" && newMessagesCount > 0) console.log("yes:", newMessagesCount)
+          const isActive = (pathname === `/${tabName}`) || (pathname === "/" && tabName === "chats")
+          //     if (tabName === "chats" && newMessagesCount > 0) console.log("yes:", newMessagesCount)
           return (
             <Pressable
               key={tabName}
@@ -120,11 +120,23 @@ export default function CustomTabBar({ navigation }: any) {
                       }
                     />
                   )}
-                  {tabName === "index" && newMessagesCount > 0 && (
-                    <Text className="absolute flex-row rounded-full text-white dark:text-slate-900 right-5 top-[2] text-xs bg-amber-800 px-[4] font-medium"
-                      style={{ backgroundColor: primary }}>
-                      {newMessagesCount}
-                    </Text>
+                  {tabName === "chats" && newMessagesCount > 0 && (
+                    <View
+                      className="flex justify-center items-center absolute rounded-full right-5 top-[2]"
+                      style={{
+                        backgroundColor: primary,
+                        height: 17,
+                        minWidth: 17,
+                        paddingHorizontal: 3
+                      }}
+                      onLayout={(e) => {
+                        // console.log(e.nativeEvent.layout)
+                      }}
+                    >
+                      <Text className="text-white dark:text-slate-900 text-xs font-[600]">
+                        {newMessagesCount > 99 ? "99+" : newMessagesCount}
+                      </Text>
+                    </View>
                   )}
                 </View>
                 <Text style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }} className="dark:text-white">

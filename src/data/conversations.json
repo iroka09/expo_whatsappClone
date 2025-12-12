@@ -1,0 +1,629 @@
+[
+  {
+    "id": 1,
+    "conversations": [
+      {
+        "id": "ab91ff",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=40",
+        "timestamp": 1735607160,
+        "data": [
+          {
+            "id": "ab91ff",
+            "message": "Hello Tochi",
+            "timestamp": 1735607160
+          },
+          {
+            "id": "f3c88a",
+            "message": "Good evening",
+            "timestamp": 1735607160
+          },
+          {
+            "id": "9de074",
+            "message": "How are you doing",
+            "timestamp": 1735607160
+          },
+          {
+            "id": "c29e8f",
+            "message": "How is work",
+            "timestamp": 1735607220
+          }
+        ]
+      },
+      {
+        "id": "f3c88a",
+        "user": 1,
+        "timestamp": 1735607280,
+        "data": [
+          {
+            "id": "f3c88a",
+            "message": "Amarachi",
+            "timestamp": 1735607280
+          }
+        ]
+      },
+      {
+        "id": "9de074",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=40",
+        "timestamp": 1735607400,
+        "data": [
+          {
+            "id": "9de074",
+            "message": "I will still send you something later",
+            "timestamp": 1735607400
+          },
+          {
+            "id": "e7bd11",
+            "message": "Even if it is 2000",
+            "timestamp": 1735607460
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "conversations": [
+      {
+        "id": "a83cd1",
+        "user": "peter",
+        "avatar": "https://i.pravatar.cc/150?img=15",
+        "timestamp": 1735611000,
+        "data": [
+          {
+            "id": "a83cd1",
+            "message": "Good morning everyone",
+            "timestamp": 1735611000
+          }
+        ]
+      },
+      {
+        "id": "d71fb3",
+        "user": "ada",
+        "avatar": "https://i.pravatar.cc/150?img=33",
+        "timestamp": 1735611120,
+        "data": [
+          {
+            "id": "d71fb3",
+            "message": "Good morning",
+            "timestamp": 1735611120
+          },
+          {
+            "id": "1ecfa9",
+            "message": "Any update on the project?",
+            "timestamp": 1735611180
+          }
+        ]
+      },
+      {
+        "id": "1ecfa9",
+        "user": 1,
+        "timestamp": 1735611300,
+        "data": [
+          {
+            "id": "1ecfa9",
+            "message": "Yes, we meet in the evening.",
+            "timestamp": 1735611300
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "conversations": [
+      {
+        "id": "c29e8f",
+        "user": 1,
+        "timestamp": 1735203000,
+        "data": [
+          {
+            "id": "c29e8f",
+            "message": "Where are you?",
+            "timestamp": 1735203000
+          }
+        ]
+      },
+      {
+        "id": "e4f1d2",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=22",
+        "timestamp": 1735203180,
+        "data": [
+          {
+            "id": "e4f1d2",
+            "message": "I have arrived at the junction",
+            "timestamp": 1735203180
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "conversations": [
+      {
+        "id": "f11b3c",
+        "user": 3,
+        "avatar": "https://i.pravatar.cc/150?img=12",
+        "timestamp": 1734891000,
+        "data": [
+          {
+            "id": "f11b3c",
+            "message": "Meeting at 8pm",
+            "timestamp": 1734891000
+          }
+        ]
+      },
+      {
+        "id": "a9bdc4",
+        "user": 1,
+        "timestamp": 1734891180,
+        "data": [
+          {
+            "id": "a9bdc4",
+            "message": "No problem",
+            "timestamp": 1734891180
+          }
+        ]
+      },
+      {
+        "id": "ed2285",
+        "user": "mary",
+        "avatar": "https://i.pravatar.cc/150?img=29",
+        "timestamp": 1734891300,
+        "data": [
+          {
+            "id": "ed2285",
+            "message": "Please, nobody should be late",
+            "timestamp": 1734891300
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "conversations": [
+      {
+        "id": "b29bef",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=44",
+        "timestamp": 1734501000,
+        "data": [
+          {
+            "id": "b29bef",
+            "message": "I saw your missed call",
+            "timestamp": 1734501000
+          }
+        ]
+      },
+      {
+        "id": "dacc92",
+        "user": 1,
+        "timestamp": 1734501120,
+        "data": [
+          {
+            "id": "dacc92",
+            "message": "I wanted to ask something",
+            "timestamp": 1734501120
+          }
+        ]
+      },
+      {
+        "id": "c8ff02",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=44",
+        "timestamp": 1734501300,
+        "data": [
+          {
+            "id": "c8ff02",
+            "message": "Okay, tell me",
+            "timestamp": 1734501300
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "conversations": [
+      {
+        "id": "fa7c1e",
+        "user": 1,
+        "timestamp": 1733904000,
+        "data": [
+          {
+            "id": "fa7c1e",
+            "message": "Send me the account number",
+            "timestamp": 1733904000
+          }
+        ]
+      },
+      {
+        "id": "bd1e32",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=18",
+        "timestamp": 1733904300,
+        "data": [
+          {
+            "id": "bd1e32",
+            "message": "Here it is 0123456789",
+            "timestamp": 1733904300
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "conversations": [
+      {
+        "id": "913fbb",
+        "user": "ike",
+        "avatar": "https://i.pravatar.cc/150?img=19",
+        "timestamp": 1733700000,
+        "data": [
+          {
+            "id": "913fbb",
+            "message": "Football match today?",
+            "timestamp": 1733700000
+          }
+        ]
+      },
+      {
+        "id": "fa3cc2",
+        "user": 1,
+        "timestamp": 1733700240,
+        "data": [
+          {
+            "id": "fa3cc2",
+            "message": "Yes, I am coming",
+            "timestamp": 1733700240
+          }
+        ]
+      },
+      {
+        "id": "b14f98",
+        "user": "sam",
+        "avatar": "https://i.pravatar.cc/150?img=27",
+        "timestamp": 1733700360,
+        "data": [
+          {
+            "id": "b14f98",
+            "message": "Bring the ball please",
+            "timestamp": 1733700360
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "conversations": [
+      {
+        "id": "e7bd11",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=25",
+        "timestamp": 1733000000,
+        "data": [
+          {
+            "id": "e7bd11",
+            "message": "Tochi, please help me check something",
+            "timestamp": 1733000000
+          }
+        ]
+      },
+      {
+        "id": "a18ccd",
+        "user": 1,
+        "timestamp": 1733000160,
+        "data": [
+          {
+            "id": "a18ccd",
+            "message": "What is it?",
+            "timestamp": 1733000160
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "conversations": [
+      {
+        "id": "f0c2a1",
+        "user": 1,
+        "timestamp": 1732600000,
+        "data": [
+          {
+            "id": "f0c2a1",
+            "message": "Are you free later?",
+            "timestamp": 1732600000
+          }
+        ]
+      },
+      {
+        "id": "dc8bf1",
+        "user": "girl1",
+        "avatar": "https://i.pravatar.cc/150?img=30",
+        "timestamp": 1732600140,
+        "data": [
+          {
+            "id": "dc8bf1",
+            "message": "Yes, what is it?",
+            "timestamp": 1732600140
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "conversations": [
+      {
+        "id": "b7ae41",
+        "user": 4,
+        "avatar": "https://i.pravatar.cc/150?img=14",
+        "timestamp": 1732300000,
+        "data": [
+          {
+            "id": "b7ae41",
+            "message": "Class is cancelled today",
+            "timestamp": 1732300000
+          }
+        ]
+      },
+      {
+        "id": "c4db90",
+        "user": 1,
+        "timestamp": 1732300200,
+        "data": [
+          {
+            "id": "c4db90",
+            "message": "Thank you for the information",
+            "timestamp": 1732300200
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "conversations": [
+      {
+        "id": "fd17ac",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=39",
+        "timestamp": 1731999000,
+        "data": [
+          {
+            "id": "fd17ac",
+            "message": "Please help me flash this phone",
+            "timestamp": 1731999000
+          }
+        ]
+      },
+      {
+        "id": "b8892e",
+        "user": 1,
+        "timestamp": 1731999180,
+        "data": [
+          {
+            "id": "b8892e",
+            "message": "Bring it tomorrow",
+            "timestamp": 1731999180
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "conversations": [
+      {
+        "id": "a48eef",
+        "user": "ann",
+        "avatar": "https://i.pravatar.cc/150?img=41",
+        "timestamp": 1731800000,
+        "data": [
+          {
+            "id": "a48eef",
+            "message": "Happy birthday dear!",
+            "timestamp": 1731800000
+          },
+          {
+            "id": "a48eef",
+            "message": "Wishing you a long life",
+            "timestamp": 1731800060
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "conversations": [
+      {
+        "id": "e1cd97",
+        "user": 1,
+        "timestamp": 1731300000,
+        "data": [
+          {
+            "id": "e1cd97",
+            "message": "Send the PDF",
+            "timestamp": 1731300000
+          }
+        ]
+      },
+      {
+        "id": "ae2f40",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=45",
+        "timestamp": 1731300120,
+        "data": [
+          {
+            "id": "ae2f40",
+            "message": "Sending now",
+            "timestamp": 1731300120
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "conversations": [
+      {
+        "id": "dbb214",
+        "user": "choir",
+        "avatar": "https://i.pravatar.cc/150?img=11",
+        "timestamp": 1731000000,
+        "data": [
+          {
+            "id": "dbb214",
+            "message": "Practice on Saturday at 4pm",
+            "timestamp": 1731000000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "conversations": [
+      {
+        "id": "fa401c",
+        "user": 1,
+        "timestamp": 1730500000,
+        "data": [
+          {
+            "id": "fa401c",
+            "message": "Today is stressful",
+            "timestamp": 1730500000
+          }
+        ]
+      },
+      {
+        "id": "be17ad",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=23",
+        "timestamp": 1730500140,
+        "data": [
+          {
+            "id": "be17ad",
+            "message": "Same here",
+            "timestamp": 1730500140
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "conversations": [
+      {
+        "id": "921b5c",
+        "user": "debby",
+        "avatar": "https://i.pravatar.cc/150?img=46",
+        "timestamp": 1730100000,
+        "data": [
+          {
+            "id": "921b5c",
+            "message": "Did you reach safely?",
+            "timestamp": 1730100000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "conversations": [
+      {
+        "id": "d02a7b",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=17",
+        "timestamp": 1729800000,
+        "data": [
+          {
+            "id": "d02a7b",
+            "message": "Is the Man City match today?",
+            "timestamp": 1729800000
+          },
+          {
+            "id": "d02a7wq",
+            "message": "At 8:45pm",
+            "timestamp": 1729800060
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "conversations": [
+      {
+        "id": "b5d41c",
+        "user": 1,
+        "timestamp": 1729500000,
+        "data": [
+          {
+            "id": "b5d41c",
+            "message": "Call me when you arrive",
+            "timestamp": 1729500000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "conversations": [
+      {
+        "id": "efc431",
+        "user": "group-admin",
+        "avatar": "https://i.pravatar.cc/150?img=13",
+        "timestamp": 1729200000,
+        "data": [
+          {
+            "id": "efc431",
+            "message": "Meeting postponed to Monday",
+            "timestamp": 1729200000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "conversations": [
+      {
+        "id": "c118bd",
+        "user": 2,
+        "avatar": "https://i.pravatar.cc/150?img=35",
+        "timestamp": 1729000000,
+        "data": [
+          {
+            "id": "c118bd",
+            "message": "I have sent the money",
+            "timestamp": 1729000000
+          }
+        ]
+      },
+      {
+        "id": "d4eb72",
+        "user": 1,
+        "timestamp": 1729000200,
+        "data": [
+          {
+            "id": "d4eb72",
+            "message": "Acknowledged",
+            "timestamp": 1729000200
+          }
+        ]
+      }
+    ]
+  }
+]

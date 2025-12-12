@@ -8,10 +8,11 @@ export default function Layout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        lazy: true
       }}
       tabBar={props => <CustomTabBar {...props} />}
     >
-      <Tabs.Screen name="index" />
+      <Tabs.Screen name="chats" />
       <Tabs.Screen name="updates" />
       <Tabs.Screen name="communities" />
       <Tabs.Screen name="calls" />
