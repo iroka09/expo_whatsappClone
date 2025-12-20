@@ -11,7 +11,7 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		27319F62A67941699C0C8EA2 /* mixkit_software_interface_remove.wav in Resources */ = {isa = PBXBuildFile; fileRef = B1DCC511C98243FBA4D43F9F /* mixkit_software_interface_remove.wav */; };
+		121B001FC5F64B53B1B7AAB8 /* mixkit_software_interface_remove.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2544235C63804E02A5E20847 /* mixkit_software_interface_remove.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +23,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = WhatsAppClone/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* WhatsAppClone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WhatsAppClone-Bridging-Header.h"; path = "WhatsAppClone/WhatsAppClone-Bridging-Header.h"; sourceTree = "<group>"; };
-		B1DCC511C98243FBA4D43F9F /* mixkit_software_interface_remove.wav */ = {isa = PBXFileReference; name = "mixkit_software_interface_remove.wav"; path = "WhatsAppClone/mixkit_software_interface_remove.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2544235C63804E02A5E20847 /* mixkit_software_interface_remove.wav */ = {isa = PBXFileReference; name = "mixkit_software_interface_remove.wav"; path = "WhatsAppClone/mixkit_software_interface_remove.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +46,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				B1DCC511C98243FBA4D43F9F /* mixkit_software_interface_remove.wav */,
+				2544235C63804E02A5E20847 /* mixkit_software_interface_remove.wav */,
 			);
 			name = WhatsAppClone;
 			sourceTree = "<group>";
@@ -73,7 +73,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				C669D984BAB540D5A084CFA7 /* Resources */,
+				7B37692EC62947FCBBB0019E /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -97,7 +97,7 @@
 			path = WhatsAppClone/Supporting;
 			sourceTree = "<group>";
 		};
-		C669D984BAB540D5A084CFA7 /* Resources */ = {
+		7B37692EC62947FCBBB0019E /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
 			);
@@ -167,7 +167,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				27319F62A67941699C0C8EA2 /* mixkit_software_interface_remove.wav in Resources */,
+				121B001FC5F64B53B1B7AAB8 /* mixkit_software_interface_remove.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
