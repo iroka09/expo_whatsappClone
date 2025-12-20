@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#fff",
+      "backgroundColor": "#ffffff",
       "image": "./assets/images/ic_launcher_foreground.png"
     },
     "ios": {
@@ -48,14 +48,18 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "experiments": {
+      "typedRoutes": true,
+      "buildCacheProvider": "eas"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5388ec0d-6c69-4332-8b1d-1c4a4cb74dd3"
+      }
+    },
     "plugins": [
-       "@notifee/react-native",
-      [
-        "expo-router",
-        {
-          //"unstable_useServerMiddleware": true
-        }
-      ],
+      "expo-router",
       [
         "expo-notifications",
         {
@@ -77,17 +81,23 @@
             "./assets/images/play.png"
           ]
         }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "buildCacheProvider": "eas"
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "5388ec0d-6c69-4332-8b1d-1c4a4cb74dd3"
-      }
-    }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      "expo-web-browser",
+      "expo-barcode-scanner",
+      "expo-background-task",
+      "expo-maps"
+    ]
   }
 }

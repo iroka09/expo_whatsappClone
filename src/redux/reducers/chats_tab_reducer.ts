@@ -1,6 +1,6 @@
 
 import _chats from "@/data/chats.json"
-import _conversations from "@/data/conversations2.json"
+import _conversations from "@/data/conversations.json"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import random from "random"
 import moment from "moment-timezone"
@@ -25,6 +25,8 @@ export interface ChatListType {
   hasStatus: boolean;
   unreadCount: number;
 }
+
+
 type Id_Arr_Type = [number, "user" | "group"]
 
 
@@ -57,16 +59,15 @@ const initialState: ChatsStateType = {
   selectedChatsIds: [],
   conversations: JSON.parse(JSON.stringify(_conversations)).map(x => {
     //manipulate conversations timestamp to ensure that they are not all the same
-    let prevTimestamp = moment("01-JAN-2015", "DD-MMMM-YYYY").valueOf();
+    let prevTimestamp = moment("01-JAN-2015", "DD-MMM-YYYY").valueOf();
     x.conversations.forEach((y, i) => {
       if (i > 0) {
-        const nowDate = Date.now()
-        if (nowDate > prevTimestamp) {
-          const timestamp = random.int(prevTimestamp, nowDate)
-          y.timestamp = timestamp
-          prevTimestamp = y.timestamp
-        }
+        const nowDate = Math.min(moment(prevTimestamp).add(2, "year").valueOf(), Date.now());
+        const timestamp = random.int(prevTimestamp, nowDate)
+        y.timestamp = timestamp
+        prevTimestamp = timestamp
       }
+      else y.timestamp = prevTimestamp
       return y
     })
     return x
@@ -101,8 +102,51 @@ const chatsSlice = createSlice({
       /* state.chatsList = [...state.chatsList, user]
        state.unreadCount = [...state.unreadCount, { id: user.id, æunreadCount: user.unreadCount }] */
     },
+    handleAddNewConversationChat(state, action: PayloadAction<{ id: number, message: string }>) {
+      const { id, message } = action.payload
+      state.conversations.forEach(conversation => {
+        //console.log(typeof id)
+        if (conversation.id === id) {
+          const lastMessageIndex = conversation.conversations.length - 1
+          const lastMessageIsFromMe = conversation.conversations[lastMessageIndex]?.user === 1
+          if (lastMessageIsFromMe) {
+            conversation.conversations[lastMessageIndex].data.push({
+              id: Math.random().toString(16).slice(-6),
+              message,
+              timestamp: Date.now()
+            })
+          } else {
+            conversation.conversations.push({
+              id: Math.random().toString(16).slice(-6),
+              user: 1,
+              data: [{
+                id: Math.random().toString(16).slice(-6),
+                message,
+                timestamp: Date.now(),
+              }],
+              avatar: "",
+              timestamp: Date.now()
+            })
+          }
+        }
+      })
+    },
   }
 });
 
-export const { toggleChatsSelection, handleMarkChatAsRead } = chatsSlice.actions;
+interface ConversationType {
+  id: number;
+  conversations: Array<{
+    id: string,
+    user: string | 1 | 2;
+    data: Array<{
+      id: string,
+      message: string,
+      timestamp: number
+    }>;
+    avatar: string;
+    timestamp: number;
+  }>;
+};
+export const { toggleChatsSelection, handleAddNewUser, handleMarkChatAsRead, handleAddNewConversationChat } = chatsSlice.actions;
 export default chatsSlice.reducer;

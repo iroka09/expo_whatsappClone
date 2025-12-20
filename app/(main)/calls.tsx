@@ -1,33 +1,23 @@
+import Swipeable  from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-import { View, Pressable, Text, TextInput } from 'react-native';
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-//import { BorderlessButton } from 'react-native-gesture-handler';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
-import IconButton from '@/components/IconButton';
-import { Camera } from "lucide-react-native"
+const RightActions = () => (
+  <View style={{ flexDirection: 'row' }} className="bg-purple-300">
+    <TouchableOpacity style={{ backgroundColor: 'red', width: 80 }} className="justify-center">
+      <Text className="text-center text-white">Delete</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={{ backgroundColor: 'blue', width: 80 }} className="justify-center">
+      <Text className="text-center text-white">Edit</Text>
+    </TouchableOpacity>
+  </View>
+);
 
-
-
-
-export default function Calls({ name, onPress }) {
-  const { top } = useSafeArea()
+export default function Item() {
   return (
-    <KeyboardAvoidingView
-      style={{
-        flex: 1,
-        justifyContent: "space-between"
-      }}
-      behavior="padding"
-      keyboardVerticalOffset={top}
-    >
-      <View style={{ marginTop: 50, height: 80, backgroundColor: "red" }} className="justify-center items-center">
-        <IconButton containerStyle={{ paddig: 0 }} style={{ backgroundColor: "pink", padding: 5 }} rippleColor="blue" borderless={true}>
-          {/* <Text>Header</Text>*/}
-          <Camera />
-        </IconButton>
+    <Swipeable renderLeftActions={RightActions}>
+      <View style={{ padding: 20 }} className="bg-slate-300">
+        <Text>Swipe me to see other side of this view</Text>
       </View>
-      <TextInput placeholder="enter some text..." />
-    </KeyboardAvoidingView>
+    </Swipeable>
   );
 }

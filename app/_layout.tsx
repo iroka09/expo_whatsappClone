@@ -90,7 +90,6 @@ export default function Layout() {
                     gestureEnabled: true,
                   }}
                 >
-
                   <Stack.Screen name="index" />
                   <Stack.Screen
                     name="(main)"
@@ -101,7 +100,7 @@ export default function Layout() {
                     options={{ headerShown: false }}
                   />
                   <Stack.Screen
-                    name="conversation/[user_id]"
+                    name="conversation/[id]"
                     options={{ headerShown: false }}
                   />
                 </Stack>

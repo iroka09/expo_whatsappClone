@@ -43,7 +43,7 @@ const {
 const GlobalValuesSharerAndExecutor = React.forwardRef(({ profilePictureModalRef }, ref) => {
   const pathname = usePathname()
   useEffect(() => {
-    if (!["/", "/chats"].includes(pathname)) {
+    if (pathname !== "/chats") {
       profilePictureModalRef.current.closeModal({ animate: false })
     }
   }, [pathname])
@@ -155,7 +155,7 @@ const HeaderBar = ({ bottomSheetRef }) => {
       (selectedChatsIds.length > 0 ? "#eeea" : undefined)
   }), [isDarkMode])
   useEffect(() => {
-    if (pathname !== "/") dispatch(toggleChatsSelection("clear"))
+    if (pathname !== "/chats") dispatch(toggleChatsSelection("clear"))
   }, [pathname])
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -260,7 +260,7 @@ const ListItemOfUser = ({ item, profilePictureModalRef, globalValuesSharerAndExe
           delayLongPress={300}
           onLongPress={() => _toggleChatsSelection([item.id, item.type], !isSelectionEnabled())}
           onPress={() => {
-            if (["/", "/chats"].includes(globalValuesSharerAndExecutorRef.current.pathname)) {
+            if (globalValuesSharerAndExecutorRef.current.pathname==="/chats") {
               profilePictureModalRef.current.openModal({ user: item, animatedRef: imageBoxRef })
             }
           }}

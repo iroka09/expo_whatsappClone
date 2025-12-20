@@ -32,18 +32,25 @@ export default function RegistrationForm() {
   };
 
   const handleSubmit = () => {
-    console.log("Submitted form:", form);
+    // console.log("Submitted form:", form);
     alert("Submitted form");
   };
 
   return (
     <KeyboardAwareScrollView
-      bottomOffset={62}
+      extraKeyboardSpace={-120}
       contentContainerStyle={{
-        flex: 1
+        flex: 1,
+        backgroundColor: "green"
       }}
     >
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          {
+            backgroundColor: "orange"
+          }
+        ]}>
         <Text style={styles.title}>Registration Form</Text>
         {Object.keys(form).map((field) => (
           <TextInput

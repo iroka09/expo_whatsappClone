@@ -264,7 +264,6 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   }, [userImageModalObj])
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      alert(modalImageViewState)
       if (modalImageViewState !== "closed") {
         closeProfilePictureModal()
         return true; // prevents app exit

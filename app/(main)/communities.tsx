@@ -1,15 +1,14 @@
 
 import React, { lazy } from 'react';
-import { View, Button, Alert, Text } from 'react-native';
-import { Animated, StyleSheet, TextInput } from "react-native";
+import { View, Button, Alert, Text, Animated, StyleSheet, TextInput } from "react-native";
 import { useKeyboardAnimation } from "react-native-keyboard-controller";
+import { useAnimatedStyle } from "react-native-reanimated";
 const Notifee = lazy(() => import('@/components/Notifee'))
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "flex-end",
   },
   row: {
@@ -26,7 +25,7 @@ function KeyboardAnimation() {
   });
   return (
     <View style={styles.container}>
-      <View style={styles.row}>
+      <View style={styles.row} className="flex-1 border-4 border-red-500 justify-center">
         <Animated.View
           style={{
             width: 50,
@@ -53,7 +52,7 @@ function KeyboardAnimation() {
 
 function App() {
   return (
-    <View className="flex-1 justify-center items-center gap-5">
+    <View className="flex-1 justify-center gap-5">
       <KeyboardAnimation />
       <Notifee />
     </View>

@@ -1,12 +1,13 @@
-import React, { lazy, memo, useState, useCallback, useEffect, useRef, useMemo, useLayoutEffect } from "react";
-import { ImageBackground, View, Text, TextInput, ScrollView, SectionList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, Dimensions, ActivityIndicator, ToastAndroid, KeyboardAvoidingView, Keyboard } from "react-native";
+import React, { useState, lazy, memo, useCallback, useEffect, useRef, useMemo, useLayoutEffect } from "react";
+import { ImageBackground, View, Text, TextInput, ScrollView, SectionList, StyleSheet, Image, Vibration, Alert, Platform, useColorScheme, BackHandler, Dimensions, ActivityIndicator, ToastAndroid, Keyboard } from "react-native";
 import { BaseButton, BorderlessButton } from "react-native-gesture-handler"
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, ZoomIn, ZoomOut } from "react-native-reanimated"
+import { KeyboardAvoidingView } from "react-native-keyboard-controller"
+import Animated, { ZoomIn, ZoomOut } from "react-native-reanimated"
 import { Camera, Search, Plus, ArchiveRestore, CheckCheck, Check, EllipsisVertical, Pin, ArrowLeft, BellOff, Trash } from "lucide-react-native"
 import IconButton from "@/components/IconButton"
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
-import { toggleChatsSelection, handleMarkChatAsRead } from "@/redux/reducers/chats_tab_reducer"
+import { toggleChatsSelection, handleMarkChatAsRead, handleAddNewConversationChat } from "@/redux/reducers/chats_tab_reducer"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router"
@@ -14,6 +15,10 @@ import random from "random"
 import moment from "moment-timezone"
 import constants from "@/data/constants.json"
 import { useSafeArea } from 'react-native-safe-area-context';
+import { Audio } from 'expo-av'
+import { useAudioPlayer } from 'expo-audio'
+
+
 
 
 const {
@@ -26,7 +31,7 @@ const {
   }
 } = constants
 
-const { width: screenWidth } = Dimensions.get('screen');
+const { width: windowWidth } = Dimensions.get('window');
 
 
 
@@ -40,58 +45,61 @@ const bubbleObj = {
 export default function Conversations() {
   const isDarkMode = useColorScheme() === "dark"
   //  const selectedChatsIds = useSelector((state: RootState) => state.chats.selectedChatsIds);
-  const params = useLocalSearchParams()
-  const chatsList = useSelector((state: RootState) => state.chats.chatsList.find(x => x.id === +params.id))
-  const conversation = useSelector((state: RootState) => state.chats.conversations.find(x => x.id === +params.id))
-  const unreadCount = useSelector((state: RootState) => state.chats.unreadCount.find(x => x.id === +params.id)?.unreadCount)
+  const sectionListRef = useRef()
+  const sectionListCanAutoScrollRef = useRef(false)
+  const chat_id = +useLocalSearchParams().id
+  const chatsList = useSelector((state: RootState) => state.chats.chatsList.find(x => x.id === chat_id))
+  const conversation = useSelector((state: RootState) => state.chats.conversations.find(x => x.id === chat_id))
+  const unreadCount = useSelector((state: RootState) => state.chats.unreadCount.find(x => x.id === chat_id)?.unreadCount)
   const dispatch = useDispatch<AppDispatch>();
   const pathname = usePathname()
   const { top } = useSafeArea()
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  //  const messageSentAudio = useAudioPlayer(require('@/assets/sounds/mixkit_software_interface_remove.wav'))
   useEffect(() => {
-    const show = Keyboard.addListener("keyboardDidShow", () => {
-      // setKeyboardVisible(true);
-    });
-    const hide = Keyboard.addListener("keyboardDidHide", () => {
-      //  setKeyboardVisible(false);
-    });
-    return () => {
-      show.remove(); hide.remove();
-    };
-  }, []);
-  useEffect(() => {
-    if (unreadCount > 0) dispatch(handleMarkChatAsRead(+params.id))
+    if (unreadCount > 0) dispatch(handleMarkChatAsRead(chat_id))
   }, [])
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-theme dark:bg-theme-dark" behavior="padding"
-      //  keyboardVerticalOffset={keyboardVisible ? top : 0}
-      keyboardVerticalOffset={top}
+    <ImageBackground
+      source={isDarkMode ? require("@/assets/images/whatsapp_conversation_dark.jpg") : require("@/assets/images/whatsapp_conversation_light.png")}
+      resizeMode="cover" // or "contain"
+      className="flex-1 "
     >
-      <Header chatsList={chatsList} />
-      <ImageBackground
-        source={isDarkMode ? require("@/assets/images/whatsapp_conversation_dark.jpg") : require("@/assets/images/whatsapp_conversation_light.png")}
-        resizeMode="cover" // or "contain"
+      <KeyboardAvoidingView
         className="flex-1"
+        behavior="padding"
+        keyboardVerticalOffset={top}
       >
+        <Header chatsList={chatsList} />
         <SectionList
+          ref={sectionListRef}
           sections={conversation.conversations}
-          contentContainerStyle={{
-            // padding: 2,
-          }}
-          style={{
-            // padding: 2,
-          }}
+          // contentContainerStyle={{ }}
+          // style={{ }}
           keyExtractor={(item) => item.id} //item is data[key]
           renderItem={({ item }) => <Bubble item={item} profile={chatsList} />}
           renderSectionHeader={({ section }) => {
             const index = conversation.conversations.findIndex(x => x.id === section.id)
             return <SectionHeader section={section} prevSection={index > 0 ? conversation.conversations[index - 1] : null} index={index} />
           }}
+          onContentSizeChange={(height, scrollHeight) => {
+            if (sectionListRef.current.autoScrollEnabled) {
+              requestAnimationFrame(() => {
+                const sections = conversation.conversations
+                // alert([...(sections[sections.length - 1]?.data)].pop().message)
+                sectionListRef.current?.scrollToLocation({
+                  sectionIndex: sections.length - 1,
+                  itemIndex: sections[sections.length - 1]?.data.length - 1,
+                  animated: true
+                })
+                //  messageSentAudio.play()
+              })
+              sectionListRef.current.autoScrollEnabled = false
+            }
+          }}
         />
-        <BottomInputBar />
-      </ImageBackground>
-    </KeyboardAvoidingView>
+        <BottomInputBar chat_id={chat_id} sectionListRef={sectionListRef} />
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -99,9 +107,16 @@ export default function Conversations() {
 function Header({ chatsList }) {
   const isDarkMode = useColorScheme() === "dark"
   const router = useRouter()
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      router.back()
+      return true; // prevents app exit
+    })
+    return () => sub.remove()
+  }, [])
   return (
     <View
-      className="flex-row items-center pb-1 px-1 py-2"
+      className="flex-row items-center bg-theme dark:bg-theme-dark pb-1 px-1 py-2"
     >
       <IconButton onPress={() => router.back()}><ArrowLeft color={isDarkMode ? "#aaa" : "#666"} /></IconButton>
       <Image
@@ -131,12 +146,7 @@ function Header({ chatsList }) {
 
 
 
-function SectionHeader({ section, prevSection, index }) {
-  // console.log("section: ", section)
-  // console.log("prevSection: ", prevSection)
- /* if (typeof section.user !== "string") {
-    console.log(section.user)
-  }*/
+const SectionHeader = memo(({ section, prevSection, index }) => {
   bubbleObj.username = (typeof section.user === "string") ? section.user : "unknown";
   bubbleObj.avatar = section.avatar
   bubbleObj.messageIds = section.data.map(x => x.id)
@@ -156,23 +166,41 @@ function SectionHeader({ section, prevSection, index }) {
         </Text>}
     </View>
   )
-}
+})
 
 
-function BottomInputBar() {
+const BottomInputBar = memo(({ chat_id, sectionListRef }) => {
   const [height, setHeight] = useState<number>()
   const [textInputHeight, setTextInputHeight] = useState<number>()
   const [borderRadius, setBorderRadius] = useState<number>()
   const [message, setMessage] = useState("")
   const [hasText, setHasText] = useState(!!message?.trim())
+  const dispatch = useDispatch<AppDispatch>();
   const isDarkMode = useColorScheme() === "dark"
-  const marginProgress = useSharedValue(0)
-  const marginStyle = useAnimatedStyle(() => ({
-    width: interpolate(marginProgress.value, [0, 1], [76, 38])
-  }))
+  // const soundRef = useRef<Audio.Sound | null>(null);
+  const handlePressSubmit = (isMessage: boolean) => {
+    if (isMessage) {
+      sectionListRef.current.autoScrollEnabled = true
+      dispatch(handleAddNewConversationChat({ id: chat_id, message }))
+      setMessage("")
+      setTextInputHeight(height)
+    }
+  }
   useEffect(() => {
-    marginProgress.value = withTiming(+hasText)
-  }, [hasText])
+    setHasText(!!message?.trim())
+  }, [message])
+  /*  useEffect(() => {
+      Audio.Sound.createAsync(require('@/assets/sounds/mixkit_software_interface_remove.wav'))
+        .then(({ sound }) => {
+          soundRef.current = sound;
+        });
+      return () => {
+        soundRef.current?.unloadAsync();
+      };
+    }, []);
+  const play = async () => {
+    await soundRef.current?.replayAsync();
+  };*/
   return (
     <View className="flex-row gap-3 items-end justify-between p-2">
       <View
@@ -183,10 +211,7 @@ function BottomInputBar() {
         <TextInput
           className="flex-1 placeholder:text-[#666] dark:placeholder:text-[#ccc] text-[#666] dark:text-[#ccc]"
           value={message}
-          onChangeText={(x) => {
-            setMessage(x)
-            setHasText(!!x.trim())
-          }}
+          onChangeText={setMessage}
           onLayout={e => {
             if (height === undefined) {
               setHeight(e.nativeEvent.layout.height)//only used for border radius by half of it
@@ -203,11 +228,15 @@ function BottomInputBar() {
           }}
           multiline
           placeholder="Message"
-        // placeholderTextColor={isDarkMode ? "#ddd" : "#666"}
         />
         <Animated.View
           className="flex-row"
-          style={marginStyle}
+          style={{
+            transitionProperty: "width",
+            transitionDuration: ".2s",
+            transitionTimingFunction: "linear",
+            width: hasText ? 38 : 76
+          }}
         >
           <IconButton
             containerStyle={{
@@ -225,7 +254,7 @@ function BottomInputBar() {
         className="items-center aspect-square justify-center overflow-hidden rounded-full"
         style={{ backgroundColor: primary, height }}
       >
-        <BorderlessButton rippleColor="#0005" style={{ padding: 10 }}>
+        <BorderlessButton rippleColor="#0005" style={{ padding: 10 }} onPress={() => handlePressSubmit(hasText)}>
           {hasText ?
             <Animated.View key="send" entering={ZoomIn} exiting={ZoomOut.duration(100)}>
               <MaterialCommunityIcons name="send" size={24} color="white" />
@@ -239,12 +268,11 @@ function BottomInputBar() {
       </View>
     </View >
   )
-}
+})
 
 
-function Bubble({ item, profile }) {
-  //  console.log("all: ", messageIds)
-  // console.log("one: ", item.id)
+
+const Bubble = memo(({ item, profile }) => {
   const avatar = useRef(bubbleObj.avatar).current
   const username = useRef(bubbleObj.username).current
   const fromMe = useRef(bubbleObj.fromMe).current
@@ -255,17 +283,31 @@ function Bubble({ item, profile }) {
   const phone = useRef(`+234 ${random.choice("802,806,706,813,906,903,703".split(","))} ${random.int(100, 999)} ${random.int(1000, 9999)}`).current
   const colors = useRef([random.int(0, 360), random.int(20, 100)]).current
   const foregroundColor = `hsl(${colors[0]},${colors[1]}%,30%)`
-  const backgroundColor = `hsl(${colors[0]},${colors[1]}%,${isDarkMode ? "60%" : "75%"})`
-  const messageStatus = useRef(
+  const backgroundColor = `hsl(${colors[0]},${colors[1]}%,75%)`
+  const isNew = (Date.now() - item.timestamp) < 5 * 1000
+  const [messageStatus, setMessageStatus] = useState(
     fromMe ? (
       profile.type === "group" ?
         "delivered"
         :
-        random.choice(["delivered", "read", "delivered", "unread"])
+        random.choice(["delivered", "unread", isNew ? undefined : "read"])
     )
       :
       (null)
-  ).current
+  )
+  useEffect(() => {
+    if (random.boolean() || profile.type === "group") return
+    setTimeout(() => {
+      if (fromMe) {
+        setMessageStatus("read")
+        if (isNew) {
+          setTimeout(() => {
+            setMessageStatus(random.choice(["delivered", "read"]))
+          }, random.choice([500, 10000]))
+        }
+      }
+    }, random.choice([500, 10000]))
+  }, [])
   return (
     <BaseButton
       rippleColor="#6665"
@@ -276,11 +318,17 @@ function Bubble({ item, profile }) {
       <View
         className={`flex-row w-full px-2 mb-1 ${nextPersonBeginsChat ? "mt-2" : "mt-1"}`}
       >
-        {profile.type === "group" && (!fromMe) &&
+        {
+          profile.type === "group" && (!fromMe) &&
           <View className="relative aspect-square w-[30px] rounded-full overflow-hidden mr-2">
             {isGroup_isFirstChat_isNotMe &&
               <>
-                <Text className="absolute w-full aspect-square uppercase text-2xl font-medium text-center" style={{ backgroundColor, color: foregroundColor }}>
+                <Text
+                  className="absolute w-full aspect-square uppercase text-2xl font-medium text-center"
+                  style={{
+                    backgroundColor: isDarkMode ? foregroundColor : backgroundColor,
+                    color: isDarkMode ? backgroundColor : foregroundColor
+                  }}>
                   {username.charAt(0)}
                 </Text>
                 <Image
@@ -288,11 +336,12 @@ function Bubble({ item, profile }) {
                   className="absolute w-full aspect-square "
                 />
               </>}
-          </View>}
+          </View>
+        }
         <View
           className={`${fromMe ? "ml-auto bg-[#D7FDD2] dark:bg-[#134D37] mr-2" : "justify-start bg-white dark:bg-[#1F272A]"} relative rounded-[12] py-1 px-3 border-b-[.5px] border-black/10 py-50 `}
           style={{
-            maxWidth: screenWidth * 0.8,  //80%
+            maxWidth: windowWidth * 0.8,  //80%
             ... (profile.type === "user" && !fromMe) && { marginLeft: 8 },
           }}
         >
@@ -339,11 +388,11 @@ function Bubble({ item, profile }) {
       </View>
     </BaseButton>
   )
-}
+})
 
 
 
-
+/*
 interface ConversationType {
   id: number;
   conversations: Array<{
@@ -380,3 +429,4 @@ export interface ChatListType {
 }
 type Id_Arr_Type = [number, "user" | "group"]
 
+*/
