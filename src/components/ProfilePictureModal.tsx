@@ -13,6 +13,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ScreenCapture from 'expo-screen-capture';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePathname } from "expo-router"
 import constants from "@/data/constants.json"
 
 
@@ -54,6 +55,8 @@ const _Animated = {
 Object.freeze(_Animated)
 
 let n = 0
+
+
 
 const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, ref) => {
   const [remount, setRemount] = useState()
@@ -308,7 +311,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
           { opacity: userImageModalObj ? 1 : 0 }
         ]}
         pointerEvents={userImageModalObj ? "auto" : "none"}
-       // className="bg-blue-700/50"
+      // className="bg-blue-700/50"
       >
         <Pressable
           onPress={() => {
@@ -477,4 +480,12 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
   )
 })
 
-export default ProfilePictureModal
+const App = memo(({ pathname = "*", ...props }) => {
+  const _pathname = usePathname()
+  if (_pathname === pathname || pathname === "*") {
+    return <ProfilePictureModal {...props} />
+  }
+})
+
+
+export default App

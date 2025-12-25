@@ -44,7 +44,7 @@ const GlobalValuesSharerAndExecutor = React.forwardRef(({ profilePictureModalRef
   const pathname = usePathname()
   useEffect(() => {
     if (pathname !== "/chats") {
-      profilePictureModalRef.current.closeModal({ animate: false })
+      // profilePictureModalRef.current.closeModal({ animate: false })
     }
   }, [pathname])
   React.useImperativeHandle(ref, () => ({
@@ -60,7 +60,6 @@ const GlobalValuesSharerAndExecutor = React.forwardRef(({ profilePictureModalRef
 let ss = 0
 
 export default function App() {
-  // console.log(++ss, "App()")
   const chats = useSelector((state: RootState) => state.chats.chatsList);
   const [isProfilePictureModalVisible, setIsProfilePictureModalVisible] = useState(true)
   const profilePictureModalRef = useRef({})
@@ -134,6 +133,7 @@ export default function App() {
     </View>
     <ProfilePictureModal
       ref={profilePictureModalRef}
+      pathname="/chats"
       modalImageBoxInitialBorderRadius={modalImageBoxInitialBorderRadius}
     />
     <RenderBottomSheet ref={bottomSheetRef} />
@@ -260,7 +260,7 @@ const ListItemOfUser = ({ item, profilePictureModalRef, globalValuesSharerAndExe
           delayLongPress={300}
           onLongPress={() => _toggleChatsSelection([item.id, item.type], !isSelectionEnabled())}
           onPress={() => {
-            if (globalValuesSharerAndExecutorRef.current.pathname==="/chats") {
+            if (globalValuesSharerAndExecutorRef.current.pathname === "/chats") {
               profilePictureModalRef.current.openModal({ user: item, animatedRef: imageBoxRef })
             }
           }}

@@ -66,7 +66,6 @@ export default function ContactsScreen() {
       </View>
     );
   }
-
   if (error) {
     return (
       <View style={styles.container}>
@@ -74,7 +73,6 @@ export default function ContactsScreen() {
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       <FlatList

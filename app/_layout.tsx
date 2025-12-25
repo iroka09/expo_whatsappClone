@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "@/redux/store";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Alert, Text, Image, useColorScheme, UIManager, Platform, BackHandler, ToastAndroid } from 'react-native';
@@ -11,6 +11,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 //import * as SplashScreen from 'expo-splash-screen';
 //import { StatusBar } from 'expo-status-bar';
 //import * as NavigationBar from 'expo-navigation-bar';
+import * as MediaLibrary from "expo-media-library";
 import "../global.css"
 
 
@@ -41,6 +42,7 @@ function Splash() {
 let willExit = false
 let tm
 export default function Layout() {
+  const router = useRouter()
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       function byTiming() {
@@ -69,10 +71,18 @@ export default function Layout() {
         ]);
         return true
       }
-      return byTiming()
-      //return byAlertWindow()
+      if (!router.canGoBack()) {
+        return byTiming()
+        //return byAlertWindow()
+      }
     })
     return () => sub.remove()
+  }, [])
+  useEffect(() => {
+    (async () => {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted")   alert("Media permission denied");
+    })()
   }, [])
   return (
     <ReduxProvider store={store} >

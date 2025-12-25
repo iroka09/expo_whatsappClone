@@ -29,6 +29,16 @@ export interface ChatListType {
 
 type Id_Arr_Type = [number, "user" | "group"]
 
+type MediaType = {
+  id: string,
+  type: "voice-note" | "video-video",
+  uri: string,
+  /**
+   * size is in Bytes
+  */
+  size: number,
+  timestamp: number
+}
 
 interface ConversationType {
   id: number;
@@ -39,7 +49,7 @@ interface ConversationType {
       id: string,
       message: string,
       timestamp: number
-    }>;
+    } | MediaType>;
     avatar: string;
     timestamp: number;
   }>;
@@ -102,51 +112,41 @@ const chatsSlice = createSlice({
       /* state.chatsList = [...state.chatsList, user]
        state.unreadCount = [...state.unreadCount, { id: user.id, æunreadCount: user.unreadCount }] */
     },
-    handleAddNewConversationChat(state, action: PayloadAction<{ id: number, message: string }>) {
-      const { id, message } = action.payload
+    handleAddNewConversationChat(state, action: PayloadAction<{ id: number, message: string, user: string | 1 | 2, avatar: string }>) {
+      const { id, uri, duration, size, type, message, user, avatar = "" } = action.payload
       state.conversations.forEach(conversation => {
         //console.log(typeof id)
-        if (conversation.id === id) {
-          const lastMessageIndex = conversation.conversations.length - 1
-          const lastMessageIsFromMe = conversation.conversations[lastMessageIndex]?.user === 1
-          if (lastMessageIsFromMe) {
-            conversation.conversations[lastMessageIndex].data.push({
+        if (conversation.id !== id) return
+        const lastMessageIndex = conversation.conversations.length - 1
+        const lastMessageIsFromMe = conversation.conversations[lastMessageIndex]?.user === 1
+        const isMedia = uri && type
+        if (user === 1 && lastMessageIsFromMe) {
+          conversation.conversations[lastMessageIndex].data.push({
+            id: Math.random().toString(16).slice(-6),
+            ... (isMedia) ? { type, uri ,size} : { message },
+            timestamp: Date.now()
+          })
+        }
+        else {
+          //alert(user + 4444)
+          conversation.conversations.push({
+            id: Math.random().toString(16).slice(-6),
+            user,
+            data: [{
               id: Math.random().toString(16).slice(-6),
-              message,
-              timestamp: Date.now()
-            })
-          } else {
-            conversation.conversations.push({
-              id: Math.random().toString(16).slice(-6),
-              user: 1,
-              data: [{
-                id: Math.random().toString(16).slice(-6),
-                message,
-                timestamp: Date.now(),
-              }],
-              avatar: "",
-              timestamp: Date.now()
-            })
-          }
+              ... (isMedia) ? { type, uri, size } : { message },
+              timestamp: Date.now(),
+            }],
+            avatar,
+            timestamp: Date.now()
+          })
         }
       })
     },
   }
 });
 
-interface ConversationType {
-  id: number;
-  conversations: Array<{
-    id: string,
-    user: string | 1 | 2;
-    data: Array<{
-      id: string,
-      message: string,
-      timestamp: number
-    }>;
-    avatar: string;
-    timestamp: number;
-  }>;
-};
+
+
 export const { toggleChatsSelection, handleAddNewUser, handleMarkChatAsRead, handleAddNewConversationChat } = chatsSlice.actions;
 export default chatsSlice.reducer;

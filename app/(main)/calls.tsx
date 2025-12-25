@@ -1,23 +1,127 @@
-import Swipeable  from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-const RightActions = () => (
-  <View style={{ flexDirection: 'row' }} className="bg-purple-300">
-    <TouchableOpacity style={{ backgroundColor: 'red', width: 80 }} className="justify-center">
-      <Text className="text-center text-white">Delete</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={{ backgroundColor: 'blue', width: 80 }} className="justify-center">
-      <Text className="text-center text-white">Edit</Text>
-    </TouchableOpacity>
-  </View>
-);
+const { width } = Dimensions.get('window');
 
-export default function Item() {
+export default function SwiperPagerButton() {
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const buttons = ['btn 1', 'btn 2', 'btn 3', 'btn 4', 'btn 5'];
+  const scrollViewRef = useRef()
+  const onCLick = i => scrollViewRef.current?.scrollTo({ x: i * width });
   return (
-    <Swipeable renderLeftActions={RightActions}>
-      <View style={{ padding: 20 }} className="bg-slate-300">
-        <Text>Swipe me to see other side of this view</Text>
+    <View style={styles.container}>
+      <View style={{ padding: 5, paddingTop: 0 }}>
+        <ButtonContainer buttons={buttons} onClick={onCLick} scrollX={scrollX} />
       </View>
-    </Swipeable>
+      <ScrollView
+        //ref={e => (this.scrollView = e)}
+        ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        decelerationRate="fast"
+        showsHorizontalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false },
+        )}>
+        {buttons.map(x => (
+          <View style={[styles.card]} key={x} />
+        ))}
+      </ScrollView>
+    </View>
   );
 }
+
+function ButtonContainer({ buttons, onClick, scrollX }) {
+  const [btnContainerWidth, setWidth] = useState(0);
+  const btnWidth = btnContainerWidth / buttons.length;
+  const translateX = scrollX.interpolate({
+    inputRange: [0, width],
+    outputRange: [0, btnWidth],
+  });
+  const translateXOpposit = scrollX.interpolate({
+    inputRange: [0, width],
+    outputRange: [0, -btnWidth],
+  });
+  return (
+    <View
+      style={styles.btnContainer}
+      onLayout={e => setWidth(e.nativeEvent.layout.width)}>
+      {buttons.map((btn, i) => (
+        <TouchableOpacity
+          key={btn}
+          style={styles.btn}
+          onPress={() => onClick(i)}>
+          <Text>{btn}</Text>
+        </TouchableOpacity>
+      ))}
+      <Animated.View
+        style={[
+          styles.animatedBtnContainer,
+          { width: btnWidth, transform: [{ translateX }] },
+        ]}>
+        {buttons.map(btn => (
+          <Animated.View
+            key={btn}
+            style={[
+              styles.animatedBtn,
+              { width: btnWidth, transform: [{ translateX: translateXOpposit }] },
+            ]}>
+            <Text style={styles.btnTextActive}>{btn}</Text>
+          </Animated.View>
+        ))}
+      </Animated.View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingVertical: 5
+  },
+  btnContainer: {
+    height: 40,
+    borderRadius: 5,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    backgroundColor: '#00000011',
+    width: '100%',
+  },
+  btn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  animatedBtnContainer: {
+    height: 40,
+    flexDirection: 'row',
+    position: 'absolute',
+    overflow: 'hidden',
+    backgroundColor: '#4a4c',
+  },
+  animatedBtn: {
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnTextActive: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  card: {
+    width: width - 10,
+    height: '100%',
+    marginHorizontal: 5,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
