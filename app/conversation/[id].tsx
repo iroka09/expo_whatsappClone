@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useEffect, useRef } from "react";
+import React, { useState, memo, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { ImageBackground, View, Text, TextInput, FlatList, SectionList, Image, Alert, useColorScheme, BackHandler, Dimensions, ToastAndroid } from "react-native";
 // import { FlashList } from '@shopify/flash-list';
 import { BaseButton, BorderlessButton } from "react-native-gesture-handler"
@@ -6,6 +6,7 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller"
 import Animated, { LinearTransition, useSharedValue, useAnimatedStyle, withTiming, interpolate, ZoomIn, ZoomOut } from "react-native-reanimated"
 import { Camera, Search, Plus, ArchiveRestore, CheckCheck, Check, EllipsisVertical, ArrowLeft, BellOff, Trash } from "lucide-react-native"
 import IconButton from "@/components/IconButton"
+import { useSound } from "@/components/SoundProvider"
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
 import { handleMarkChatAsRead, handleAddNewConversationChat } from "@/redux/reducers/chats_tab_reducer"
@@ -51,54 +52,11 @@ const bubbleObj = {
 }
 
 
-const playSound = async (key: SoundKeysType) => {
-  let sound = null
-  switch (key) {
-    case "textMessageSentSound":
-      const { sound: textMessageSentSound } = await Audio.Sound.createAsync(require('@/assets/sounds/text_message_sent.m4a'));
-      sound = textMessageSentSound
-      break
-    case "voiceNoteStartSound":
-      const { sound: voiceNoteStartSound } = await Audio.Sound.createAsync(require('@/assets/sounds/voice_note_start.m4a'));
-      sound = voiceNoteStartSound
-      break
-    case "voiceNotePausedSound":
-      const { sound: voiceNotePausedSound } = await Audio.Sound.createAsync(require('@/assets/sounds/voice_note_paused.mp3'));
-      sound = voiceNotePausedSound
-      break
-    case "voiceNoteStopSound":
-      const { sound: voiceNoteStopSound } = await Audio.Sound.createAsync(require('@/assets/sounds/voice_note_stop.m4a'));
-      sound = voiceNoteStopSound
-      break
-    case "voiceNoteSendSound":
-      const { sound: voiceNoteSendSound } = await Audio.Sound.createAsync(require('@/assets/sounds/voice_note_send.m4a'));
-      sound = voiceNoteSendSound
-      break
-    case "incomingMessageSound":
-      const { sound: incomingMessageSound } = await Audio.Sound.createAsync(require('@/assets/sounds/incoming_message.mp3'));
-      sound = incomingMessageSound
-      break
-    default:
-      break
-  }
-  if (sound === null) return
-  sound.setOnPlaybackStatusUpdate(async (status) => {
-    if (status.didJustFinish && !status.isLooping) {
-      //finished playing
-      await sound.unloadAsync()
-    }
-  })
-  //  await sound.setPositionAsync(0)
-  sound.playAsync()
-}
-
-
-type SoundKeysType = "textMessageSentSound" | "voiceNotePausedSound" | "voiceNoteStartSound" | "voiceNoteStopSound" | "voiceNoteSendSound" | "incomingMessageSound"
-
 export default function Conversations() {
   const isDarkMode = useColorScheme() === "dark"
+  const { playSound } = useSound()
   //  const selectedChatsIds = useSelector((state: RootState) => state.chats.selectedChatsIds);
-  const sectionListRef = useRef()
+  const sectionListRef = useRef(null)
   const sectionListCanAutoScrollRef = useRef(false)
   const chat_id = +useLocalSearchParams().id
   const chatsList = useSelector((state: RootState) => state.chats.chatsList.find(x => x.id === chat_id))
@@ -125,7 +83,7 @@ export default function Conversations() {
   useEffect(() => {
     if (unreadCount > 0) dispatch(handleMarkChatAsRead(chat_id))
   }, [])
-  return (
+  return (<>
     <ImageBackground
       source={isDarkMode ? require("@/assets/images/whatsapp_conversation_dark.jpg") : require("@/assets/images/whatsapp_conversation_light.png")}
       resizeMode="cover" // or "contain"
@@ -175,7 +133,7 @@ export default function Conversations() {
         <BottomInputBar chat_id={chat_id} sectionListRef={sectionListRef} playSound={playSound} />
       </KeyboardAvoidingView>
     </ImageBackground>
-  );
+  </>);
 }
 
 
@@ -288,7 +246,7 @@ const BottomInputBar = memo(({ chat_id, sectionListRef, playSound }) => {
   const handleSendVoiceNote = useCallback(async (uri) => {
     const file = new File(uri);
     const destination = new Directory(Paths.document, "Voices")
-  //  await file.move(destination);//didn't work
+    //  await file.move(destination);//didn't work
     dispatch(handleAddNewConversationChat({
       id: chat_id,
       type: "voice-note",
@@ -312,7 +270,7 @@ const BottomInputBar = memo(({ chat_id, sectionListRef, playSound }) => {
     recordingRef.current = recording
     await recording.prepareToRecordAsync({
       android: {
-        extension: ".m4a",
+        extension: ".wav",
         outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
         audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
         sampleRate: 11000,
@@ -401,18 +359,6 @@ const BottomInputBar = memo(({ chat_id, sectionListRef, playSound }) => {
   useEffect(() => {
     setHasText(!!message?.trim())
   }, [message])
-  /*  useEffect(() => {
-      Audio.Sound.createAsync(require('@/assets/sounds/mixkit_software_interface_remove.wav'))
-        .then(({ sound }) => {
-          soundRef.current = sound;
-        });
-      return () => {
-        soundRef.current?.unloadAsync();
-      };
-    }, []);
-  const play = async () => {
-    await soundRef.current?.replayAsync();
-  };*/
   if (recorderState === "stopped" || recorderState === "idle")
     return (
       <View className="flex-row gap-3 items-end justify-between p-2">
@@ -497,7 +443,7 @@ const BottomInputBar = memo(({ chat_id, sectionListRef, playSound }) => {
       <View className="bg-theme dark:bg-theme-dark p-5 gap-5">
         <View className="flex-row gap-3 items-center">
           <Text className="text-neutral-500 text-lg">{formatRecordingTime(recordingDuration)}</Text>
-          <WaveForm waveformBarHeightRef={waveformBarHeightRef} />
+          <WaveForm_custom waveformBarHeightRef={waveformBarHeightRef} />
         </View>
         <View className="flex-row justify-between items-center">
           <IconButton onPress={() => { setRecorderState("stopped") }}>
@@ -533,7 +479,7 @@ const BottomInputBar = memo(({ chat_id, sectionListRef, playSound }) => {
 
 
 const barWidth = 2; const barGap = 2; const duration = 100
-const WaveForm = memo(({ waveformBarHeightRef }) => {
+const WaveForm_custom = memo(({ waveformBarHeightRef }) => {
   const [heights, setHeights] = useState([{ id: "wr3r5", value: 0 }])
   const translateProgress = useSharedValue(0)
   const containerStyle = useAnimatedStyle(() => ({
@@ -716,6 +662,24 @@ const Bubble = memo(({ item, profile }) => {
 
 
 function VoiceNote({ item }) {
+  return (
+    <Waveform
+      mode="static"
+      // ref={ref}
+      path={item.uri.replace("file://", "/")}
+      candleSpace={2}
+      candleWidth={4}
+      scrubColor="white"
+      onPlayerStateChange={playerState => {
+        alert(playerState)
+        console.log(playerState)
+      }}
+      onPanStateChange={isMoving => {
+        alert(isMoving)
+        console.log(isMoving)
+      }}
+    />
+  )
   const isDarkMode = useColorScheme() === "dark"
   const player = useAudioPlayer(item.uri)
   const status = useAudioPlayerStatus(player)
@@ -738,16 +702,7 @@ function VoiceNote({ item }) {
           </IconButton>
         }
         <View className="flex-1">
-          <Waveform
-            mode="static"
-            // ref={ref}
-            path={item.uri}
-            candleSpace={2}
-            candleWidth={4}
-            scrubColor="white"
-            onPlayerStateChange={playerState => console.log(playerState)}
-            onPanStateChange={isMoving => console.log(isMoving)}
-          />;
+
         </View >
       </View >
       {
@@ -755,7 +710,9 @@ function VoiceNote({ item }) {
           <Text className="text-slate-800 dark:text-slate-200">{JSON.stringify(status, null, 2)}</Text>
           */
       }
+
       <Text className="text-slate-800 dark:text-slate-200">{Math.floor(item.size / 1024) + "KB"}</Text>
+
     </View >
   )
 }

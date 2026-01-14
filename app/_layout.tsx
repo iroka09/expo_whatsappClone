@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Alert, Text, Image, useColorScheme, UIManager, Platform, BackHandler, ToastAndroid } from 'react-native';
 import { PaperProvider } from "react-native-paper";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import SoundProvider from "@/components/SoundProvider"
 //import * as SplashScreen from 'expo-splash-screen';
 //import { StatusBar } from 'expo-status-bar';
 //import * as NavigationBar from 'expo-navigation-bar';
@@ -81,7 +82,7 @@ export default function Layout() {
   useEffect(() => {
     (async () => {
       const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted")   alert("Media permission denied");
+      if (status !== "granted") alert("Media permission denied");
     })()
   }, [])
   return (
@@ -89,33 +90,35 @@ export default function Layout() {
       <GestureHandlerRootView>
         <KeyboardProvider>
           <PaperProvider>
-            <SafeAreaProvider>
-              <SafeAreaView className="flex-1 bg-theme dark:bg-theme-dark">
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    presentation: "card",
-                    animation: "slide_from_right",
-                    animationTypeForReplace: "push",
-                    gestureEnabled: true,
-                  }}
-                >
-                  <Stack.Screen name="index" />
-                  <Stack.Screen
-                    name="(main)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="contacts"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="conversation/[id]"
-                    options={{ headerShown: false }}
-                  />
-                </Stack>
-              </SafeAreaView>
-            </SafeAreaProvider>
+            <SoundProvider>
+              <SafeAreaProvider>
+                <SafeAreaView className="flex-1 bg-theme dark:bg-theme-dark">
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      presentation: "card",
+                      animation: "slide_from_right",
+                      animationTypeForReplace: "push",
+                      gestureEnabled: true,
+                    }}
+                  >
+                    <Stack.Screen name="index" />
+                    <Stack.Screen
+                      name="(main)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="contacts"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="conversation/[id]"
+                      options={{ headerShown: false }}
+                    />
+                  </Stack>
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </SoundProvider>
           </PaperProvider>
         </KeyboardProvider>
       </GestureHandlerRootView>

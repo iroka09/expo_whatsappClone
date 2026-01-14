@@ -127,7 +127,7 @@ const ProfilePictureModal = forwardRef(({ modalImageBoxInitialBorderRadius }, re
       const val = measure(imageBoxRef)
       if (val) {
         userSmallLeftProfilePictureLayout.value = val
-        progress.value = withTiming(1, { duration: durationIn, easing: Easing.linear }, finished => {
+        progress.value =  withTiming(1, { duration: durationIn, easing: Easing.linear }, finished => {
           if (finished) {
             runOnJS(setModalImageViewState)("half-opened")
           }
